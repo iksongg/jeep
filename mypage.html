@@ -45,6 +45,18 @@
       background: white; overflow: hidden;
     }
 
+    /* components/footer.js는 실제 뷰포트 폭 1024~1365.98px 구간에서 footer-cols를
+       6열→3열로 자체 재배치하는데(반응형 축소가 아니라 실제 폭 기준 미디어쿼리라
+       --page-scale 축소와 무관하게 그대로 적용됨), 이때 Footer 자체 높이가 약 2배로
+       늘어난다. .page는 6열(desktop) Footer 기준의 고정 height:1551px라, 이 구간에서는
+       늘어난 Footer 하단이 .page의 overflow:hidden에 잘려 "Footer가 중간에 붕 뜬 것처럼"
+       보였음 — Footer의 위치/디자인이 아니라 .page 높이가 이 구간의 실제 Footer 높이를
+       못 따라간 것이 원인. footer.js는 건드리지 않고, 같은 구간에서 .page 높이만
+       늘어난 Footer가 다 들어갈 만큼 보정한다 */
+    @media (min-width: 1024px) and (max-width: 1365.98px) {
+      .page { height: 1750px; }
+    }
+
     /* NAV: 1024px 이상에서만 페이지와 같은 비율로 축소 동기화 (다른 페이지와 동일한 패턴).
        1024px 미만은 흐름 레이아웃(.mp-sidebar/.mp-card)으로 전환되므로 nav도 components/header.js의
        모바일 스타일을 그대로 씀 */

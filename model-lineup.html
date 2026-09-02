@@ -363,6 +363,31 @@
       .lineup-card--cherokee .lineup-card-media { left: 3% !important; top: 9% !important; width: 94% !important; }
     }
 
+    /* ══════════════════════ TABLET ONLY (769px ~ 1023.98px) ══════════════════════
+       이 구간만 .lineup-hero 높이가 62vw(최대 560px)로 768px 이하(100vw)보다 상대적으로
+       가로로 넓고 낮은 비율이 되는데, 하단 고정(bottom:0)된 전경 차량 컷아웃
+       (.lineup-hero-car-wrap, z-index:5, width:72vw)은 계속 커지기만 해서, 히어로 높이가
+       560px로 꽉 차는 900px 부근부터는 차량 상단(앞유리, 불투명 픽셀)이 타이틀 2번째 줄
+       (z-index:2)을 그대로 가리고, 폭이 커질수록 더 심해짐(단순 저대비가 아니라 차량
+       이미지가 텍스트 위에 그려지는 문제 — 차량 레이어를 숨기고 확인해 검증함).
+       레이아웃/이미지/문구는 그대로 두고, (1) 히어로 높이가 최대치(560px)에 닿는 지점
+       이후로는 차량 폭도 더 커지지 않게 상한을 맞춰 겹침이 폭에 따라 계속 심해지지
+       않도록 하고, (2) 타이틀을 그 상한 기준에 맞을 만큼만 살짝 위로 올리고,
+       (3) 옅은 text-shadow도 함께 둬 배경 사진 위에서도 안정적으로 읽히게 함
+       (768px 이하·1024px 이상은 영향받지 않음) */
+    @media (min-width: 769px) and (max-width: 1023.98px) {
+      .lineup-hero-car-wrap { max-width: 650px; }
+      .lineup-hero-content { padding-top: 0; }
+      .lineup-hero-title {
+        text-shadow:
+          0 2px 16px rgba(0, 0, 0, 0.75),
+          1px 1px 3px rgba(0, 0, 0, 0.9),
+          -1px 1px 3px rgba(0, 0, 0, 0.9),
+          1px -1px 3px rgba(0, 0, 0, 0.9),
+          -1px -1px 3px rgba(0, 0, 0, 0.9);
+      }
+    }
+
     /* ══════════════════════ MOBILE (768px 이하): 카드 1열 + 사이즈 추가 축소 ══════════════════════ */
     @media (max-width: 768px) {
       .lineup-hero { height: 100vw; min-height: 300px; }
