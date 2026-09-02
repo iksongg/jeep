@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeep® | 마이페이지</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="design-system/tokens.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Rounded';
+      font-weight: normal; font-style: normal;
+      font-size: 24px; line-height: 1; letter-spacing: normal;
+      text-transform: none; display: inline-block; white-space: nowrap;
+      word-wrap: normal; direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      vertical-align: middle;
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      width: 1em; height: 1em; overflow: hidden;
+    }
+    :root { --page-scale: 1; }
+    html, body { overflow-x: hidden; }
+    /* 한글 단어(어절)가 줄바꿈 시 글자 중간에서 잘리지 않도록 페이지 전역 적용
+       (white-space:nowrap이 white-space:normal로 바뀌는 모바일에서만 실제로 작동) */
+    body { font-family: 'Pretendard', 'Noto Sans KR', sans-serif; background: white; word-break: keep-all; }
+
+    /* 1920 기준 데스크톱 레이아웃을 1024px까지는 그대로 비율 축소 */
+    .scale-outer { position: relative; width: 100%; overflow: hidden; background: white; }
+
+    /* ── PAGE ── */
+    .page {
+      position: absolute; top: 0; left: 50%;
+      width: 1920px; height: 1551px;
+      transform: translateX(-50%) scale(var(--page-scale));
+      transform-origin: top center;
+      background: white; overflow: hidden;
+    }
+
+    /* NAV: 1024px 이상에서만 페이지와 같은 비율로 축소 동기화 (다른 페이지와 동일한 패턴).
+       1024px 미만은 흐름 레이아웃(.mp-sidebar/.mp-card)으로 전환되므로 nav도 components/header.js의
+       모바일 스타일을 그대로 씀 */
+    @media (min-width: 1024px) {
+      body nav.__jeep-nav {
+        left: 50% !important;
+        transform: translateX(-50%) scale(var(--page-scale, 1)) !important;
+        transform-origin: top center !important;
+      }
+    }
+
+    /* ── 공통 ── */
+    .info-row { display: flex; align-items: center; height: 34px; }
+    .lbl { display: flex; align-items: center; padding: 8px 0; font-size: 14px; font-weight: 600; color: black; line-height: 1.3; white-space: nowrap; }
+    .val { display: flex; align-items: center; padding: 8px 0 8px 10px; font-size: 14px; font-weight: 400; color: black; line-height: 1.3; white-space: nowrap; }
+
+    /* ── PC 좌측 메뉴 아코디언(차량관리/구매 및 신청관리): 클릭 시 접힘·펼침 애니메이션 ──
+       is-open 토글 시 화살표는 180deg 회전, 본문은 max-height/opacity로 부드럽게 개폐(모바일 LNB 토글과 동일 패턴) */
+    .mp-menu-header .mp-menu-chevron { transition: transform 0.45s ease; }
+    .mp-menu-header.is-open .mp-menu-chevron { transform: rotate(180deg); }
+    .mp-menu-group-body {
+      display: flex; flex-direction: column;
+      max-height: 0; opacity: 0; overflow: hidden;
+      transition: max-height 0.45s ease, opacity 0.4s ease;
+    }
+    .mp-menu-group-body.is-open {
+      max-height: var(--open-max-height, 500px);
+      opacity: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mp-menu-header .mp-menu-chevron,
+      .mp-menu-group-body { transition-duration: 0.01ms !important; }
+    }
+
+    /* ── 모바일 전용 LNB 드롭다운: 데스크톱에서는 항상 숨김 ── */
+    .mp-mobile-lnb { display: none; }
+    .mp-mobile-lnb-overlay { display: none; }
+
+    /* ── FOOTER (데스크톱: 절대좌표 캔버스 / 모바일: 아코디언 — footer.js·footer-jeep.js와 같은 패턴) ── */
+    footer { position: absolute; left: 0; top: 1128px; width: 1920px; height: 423px; background: #0f0f0f; }
+    .footer-inner { padding: 60px 100px 40px; display: grid; grid-template-columns: 160px 1fr; gap: 60px; }
+    .footer-logo img { width: 141px; height: 54px; object-fit: contain; }
+    .footer-cols { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+    .footer-col-group > .footer-accordion + .footer-accordion,
+    .footer-col-group > .footer-accordion + .footer-follow-wrap { margin-top: 20px; }
+    .footer-accordion summary { font-size: 16px; font-weight: 700; color: white; margin-bottom: 16px; line-height: 1.3; list-style: none; cursor: default; pointer-events: none; }
+    .footer-accordion summary::-webkit-details-marker { display: none; }
+    .footer-accordion > *:not(summary) { display: block !important; }
+    .footer-accordion::details-content { content-visibility: visible !important; height: auto !important; overflow: visible !important; }
+    .footer-accordion ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-accordion ul li a { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 400; color: #d7d7d7; text-decoration: none; display: block; transition: color 0.45s; }
+    .footer-accordion ul li a:hover { color: var(--color-primary, #487f70); }
+    .footer-accordion ul li a.kr { font-family: 'Pretendard', sans-serif; }
+    .footer-follow-title { font-size: 16px; font-weight: 700; color: white; text-transform: uppercase; line-height: 1.3; margin-bottom: 16px; }
+    .footer-social { display: flex; align-items: center; gap: 12px; }
+    .footer-social-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+    .card-btn-filled { transition: background 0.45s; }
+    .card-btn-filled:hover { background: var(--color-primary, #487f70) !important; }
+    .card-btn-outline { transition: color 0.45s, border-color 0.45s; }
+    .card-btn-outline:hover { color: var(--color-primary, #487f70) !important; border-color: var(--color-primary, #487f70) !important; }
+    .card-btn-outline:hover span { color: var(--color-primary, #487f70) !important; }
+    .footer-bottom { position: absolute; left: 0; bottom: 0; width: 100%; height: 68px; background: black; display: flex; align-items: center; justify-content: center; }
+    .footer-bottom p { font-size: 12px; color: #d7d7d7; }
+
+    /* ══════════════════════ MOBILE (1024px 미만) — 이 페이지는 피그마 모바일뷰가 없고,
+       전체가 절대좌표 인라인 스타일 캔버스라서 다른 페이지처럼 흐름 레이아웃이 없었음(계속
+       비율 축소만 했음). 여기서는 주요 블록(.mp-sidebar/.mp-card1~4)을 감싸서 각 블록의
+       "직계 자식"만 position:static으로 되돌리는 방식으로 1열 스택 레이아웃을 임의로 구성함 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; overflow-x: hidden; }
+      .scale-outer { width: 100%; height: auto !important; overflow: visible; }
+      .page { position: static !important; width: 100% !important; height: auto !important; transform: none !important; overflow: visible !important; }
+
+      /* 데스크톱 전용 우측 회색 배경 패널은 필요 없음 */
+      .mp-panel-bg { display: none !important; }
+
+      /* ── 모바일 LNB 드롭다운: GNB(고정, 56px) 바로 아래, 콘텐츠보다 위 ──
+         PC 좌측 LNB와 같은 폰트/컬러/구분선(#c1c1c1)만 재사용 — 카드/그림자/새 컬러/아이콘 없음.
+         닫힌 상태에서는 토글 한 줄만 차지해서 콘텐츠("안녕하세요!")가 바로 아래 노출됨 */
+      .mp-mobile-lnb {
+        display: block; margin-top: 56px;
+        border-bottom: 1px solid #c1c1c1;
+        position: relative; z-index: 10;
+        background: #fff;
+      }
+      /* 메뉴 OPEN 시 메뉴 아래쪽 페이지 콘텐츠만 반투명 검정으로 어둡게(메뉴 자체는 흰 배경 그대로).
+         GNB(56px, z-index:1000)는 이 오버레이보다 훨씬 위 레이어라 영향 없음.
+         .mp-mobile-lnb보다 z-index가 낮아서 메뉴/토글은 항상 오버레이 위에 선명하게 남는다.
+         단, z-index만으로는 시각적으로 안 가려진다 — toggle/.mp-mobile-lnb-panel이 원래
+         background:none/미지정(투명)이라 z-index가 더 높아도 그 뒤의 오버레이가 비쳐 보였음.
+         그래서 .mp-mobile-lnb 자체에 불투명한 흰 배경을 명시해 실제로 오버레이를 가린다. */
+      .mp-mobile-lnb-overlay {
+        display: block;
+        position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.45);
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        z-index: 5;
+      }
+      .mp-mobile-lnb.is-open ~ .mp-mobile-lnb-overlay {
+        opacity: 1; visibility: visible; pointer-events: auto;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mp-mobile-lnb-overlay { transition-duration: 0.01ms !important; }
+      }
+      .mp-mobile-lnb-toggle {
+        width: 100%; padding: 16px 20px;
+        display: flex; align-items: center; justify-content: space-between;
+        background: none; border: none; font-family: inherit; cursor: pointer; text-align: left;
+      }
+      .mp-mobile-lnb-labels { display: flex; flex-direction: column; gap: 4px; }
+      .mp-mobile-lnb-page { font-size: 13px; font-weight: 600; color: #757575; line-height: 1.3; text-transform: uppercase; }
+      .mp-mobile-lnb-current { font-size: 18px; font-weight: 700; color: black; line-height: 1.3; }
+      .mp-mobile-lnb-chevron {
+        font-size: 24px; color: black; flex-shrink: 0;
+        transition: transform 0.6s ease-out;
+      }
+      .mp-mobile-lnb.is-open .mp-mobile-lnb-chevron { transform: rotate(180deg); }
+
+      /* 펼침/접힘: max-height + opacity, 250~350ms — 콘텐츠 점프 없이 자연스럽게 */
+      .mp-mobile-lnb-panel {
+        max-height: 0; opacity: 0; overflow: hidden;
+        padding: 0 20px;
+        transition: max-height 0.6s ease-out, opacity 0.6s ease-out, padding 0.6s ease-out;
+      }
+      .mp-mobile-lnb.is-open .mp-mobile-lnb-panel {
+        max-height: 700px; opacity: 1;
+        padding: 8px 20px 12px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mp-mobile-lnb-chevron,
+        .mp-mobile-lnb-panel { transition-duration: 0.01ms !important; }
+      }
+
+      /* 복제된 헤더/아이템은 PC의 절대좌표(position/left/top/height)만 흐름 레이아웃으로
+         리셋하고, 아이콘 등 나머지 PC 인라인 스타일(원형 배경, gap, 폰트)은 그대로 재사용 */
+      .mp-mobile-lnb-panel .mp-menu-header,
+      .mp-mobile-lnb-panel .mp-menu-item {
+        display: flex !important;
+        position: static !important; left: auto !important; top: auto !important;
+        width: 100% !important; height: auto !important;
+      }
+      /* 그룹 헤더: 큰 그룹 라벨/화살표 텍스트는 숨기고(모바일 토글의 현재 위치 라벨과 중복이라
+         제외) 그룹 사이 구분선(border-top)만 남김 — 첫 번째 헤더는 패널 맨 위라 구분선 자체가
+         필요 없으므로 padding/margin까지 완전히 0으로 없애 상단에 불필요한 여백이 생기지 않게 함 */
+      .mp-mobile-lnb-panel .mp-menu-header {
+        padding: 10px 0 !important;
+      }
+      .mp-mobile-lnb-panel .mp-menu-header > span { display: none !important; }
+      .mp-mobile-lnb-panel .mp-menu-header:first-child {
+        border-top: none !important; margin: 0 !important; padding: 0 !important;
+      }
+      /* 메뉴 아이템: PC와 동일한 검정 원형 아이콘 + 흰 아이콘을 그대로 재사용(숨기지 않음).
+         아이콘-텍스트 gap도 PC 인라인 값(12px)을 그대로 둠 — 모바일에서 새로 만들지 않음 */
+      .mp-mobile-lnb-panel .mp-menu-item {
+        padding: 13px 0 !important;
+      }
+      .mp-mobile-lnb-panel .mp-menu-item > span {
+        font-size: 15px !important; font-weight: 500 !important;
+      }
+
+      /* PC 좌측 LNB의 메뉴 레이블/그룹/아이템은 모바일 드롭다운으로 옮겨갔으므로
+         사이드바 안 원본은 숨김(삭제 아님 — PC 마크업/스타일은 그대로 유지) */
+      .mp-sidebar .mp-menu-label,
+      .mp-sidebar .mp-menu-accordion,
+      .mp-sidebar .mp-menu-header,
+      .mp-sidebar .mp-menu-item { display: none !important; }
+
+      /* 카드/사이드바 안의 모든 요소는 min()으로 부모 폭을 넘지 않게(오버플로 방지) */
+      .mp-sidebar *, .mp-card * { max-width: 100%; }
+      /* 카드1의 2열(각 300px) 정보 테이블만 1열로 전환 */
+      .mp-card1 [style*="gap:104px"] { flex-direction: column !important; gap: 20px !important; }
+
+      .mp-sidebar {
+        position: static !important; width: 100%;
+        padding: 24px 20px 32px;
+      }
+      .mp-sidebar > div, .mp-sidebar > p {
+        position: relative !important; left: auto !important; top: auto !important;
+        width: 100% !important; margin: 0 !important;
+      }
+
+      main, .mp-card { display: block; }
+      .mp-card {
+        position: relative !important; width: 100%;
+        margin: 0 20px 20px; padding: 20px;
+        background: white; border: 1px solid #c1c1c1;
+        max-width: calc(100% - 40px);
+      }
+      /* 카드 안의 배경/테두리 전용 더미 div(원래 절대배치 배경)는 이제 래퍼가 대신하므로 숨김 */
+      .mp-card > div:first-child { display: none !important; }
+      .mp-card > div, .mp-card > p {
+        position: relative !important; left: auto !important; top: auto !important;
+        width: 100% !important; margin: 0 0 16px !important;
+      }
+      .mp-card > div:last-child, .mp-card > p:last-child { margin-bottom: 0 !important; }
+      .mp-card p[style*="white-space:nowrap"] { white-space: normal !important; }
+
+      /* 카드1/2/4의 버튼은 원래 우측 상단에 절대배치였음 — 모바일에서는 카드 맨 아래, 전체 폭 */
+      .card-btn-filled, .card-btn-outline { width: 100% !important; }
+
+      /* 카드2 차량 이미지 비율 유지 */
+      .mp-card2 > div[style*="overflow:hidden"] { height: auto !important; aspect-ratio: 346 / 194; }
+      /* 위 래퍼 안의 img는 인라인 width:173.39%(줌 크롭용 확대)를 써야 하는데,
+         .mp-card * { max-width:100% } 전역 규칙이 이를 100%로 눌러 크롭 비율이 깨졌었음 */
+      .mp-card2 > div[style*="overflow:hidden"] img { max-width: none; }
+      /* 카드3의 세로 타임라인 바(8px 폭 장식선)는 1열 스택에서는 불필요 — 숨김 */
+      .mp-card3 > div:nth-of-type(2) { display: none !important; }
+
+      footer {
+        position: static !important; width: 100% !important; height: auto !important;
+        margin-top: 20px;
+      }
+      .footer-inner { display: block; padding: 0; }
+      .footer-logo { display: flex; justify-content: center; padding: 40px 0 24px; }
+      .footer-cols { display: block; }
+      .footer-col-group > .footer-accordion + .footer-accordion,
+      .footer-col-group > .footer-accordion + .footer-follow-wrap { margin-top: 0; }
+
+      /* 아코디언: footer.js / footer-jeep.js와 동일한 모바일 패턴 */
+      .footer-accordion {
+        width: 100%; border-top: 1px solid #757575;
+        padding: 18px 20px;
+      }
+      .footer-accordion > *:not(summary) { display: revert !important; }
+      .footer-col-body {
+        max-height: 0; padding-top: 0; overflow: hidden;
+        transition: max-height 0.6s ease, padding-top 0.6s ease;
+      }
+      .footer-accordion[open] .footer-col-body { max-height: 600px; padding-top: 16px; }
+      .footer-accordion summary {
+        margin-bottom: 0; cursor: pointer; pointer-events: auto;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .footer-accordion summary::after {
+        content: ""; width: 10px; height: 10px;
+        border-right: 1.5px solid white; border-bottom: 1.5px solid white;
+        transform: rotate(45deg); transition: transform 0.6s ease;
+      }
+      .footer-accordion[open] summary::after { transform: rotate(-135deg); }
+      .footer-follow-wrap { display: flex; flex-direction: column; align-items: center; padding: 24px 20px; }
+
+      .footer-bottom { position: static; height: auto; padding: 20px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<script src="components/header.js"></script>
+<script src="components/modal.js"></script>
+
+<div class="scale-outer">
+<div class="page">
+
+  <!-- ══ 모바일 전용 LNB 드롭다운(태블릿/모바일, <1024px) ══
+       데스크톱 좌측 LNB(.mp-sidebar 안의 .mp-menu-label/.mp-menu-header/.mp-menu-item)를
+       그대로 복제해서 넣는 방식 — 메뉴 데이터를 중복 하드코딩하지 않고 JS로 복제함.
+       PC 레이아웃/구조는 전혀 건드리지 않음(아래 스크립트가 clone만 함). ══ -->
+  <div class="mp-mobile-lnb">
+    <button type="button" class="mp-mobile-lnb-toggle" id="mpMobileLnbToggle" aria-expanded="false" aria-controls="mpMobileLnbPanel">
+      <span class="mp-mobile-lnb-labels">
+        <span class="mp-mobile-lnb-page">마이페이지</span>
+        <span class="mp-mobile-lnb-current" id="mpMobileLnbCurrent">내 차 관리</span>
+      </span>
+      <span class="material-symbols-outlined mp-mobile-lnb-chevron">keyboard_arrow_down</span>
+    </button>
+    <div class="mp-mobile-lnb-panel" id="mpMobileLnbPanel"></div>
+  </div>
+  <div class="mp-mobile-lnb-overlay" id="mpMobileLnbOverlay"></div>
+
+  <!-- ══ 우측 회색 배경 패널 ══ -->
+  <div class="mp-panel-bg" style="position:absolute; left:730px; top:80px; width:1190px; height:1471px; background:#f8f8f8;"></div>
+
+  <!-- ════════════════════════
+       좌측 사이드바
+  ════════════════════════ -->
+  <div class="mp-sidebar">
+
+  <!-- 환영 텍스트 left:190 top:130 -->
+  <div style="position:absolute; left:190px; top:130px; font-size:50px; font-weight:700; color:black; line-height:1.3; text-transform:uppercase;">
+    <p>안녕하세요!</p>
+    <p>김지프님</p>
+  </div>
+
+  <!-- 멤버십 등급 left:186 top:285 -->
+  <p style="position:absolute; left:186px; top:285px; font-size:20px; font-weight:700; color:black; line-height:1.3; text-transform:capitalize;">
+    Jeep WAVE 프리미엄
+  </p>
+
+  <!-- 메뉴 레이블 left:186 top:354 w:456 h:62 p:10 -->
+  <div class="mp-menu-label" style="position:absolute; left:186px; top:354px; width:456px; height:62px; padding:10px; display:flex; align-items:center;">
+    <span style="font-size:24px; font-weight:700; color:black; text-transform:uppercase; line-height:1.3;">메뉴</span>
+  </div>
+
+  <!-- 좌측 메뉴 아코디언(차량관리 / 구매 및 신청관리) left:186 top:416 w:456
+       — 헤더 클릭 시 해당 그룹만 접힘/펼침 애니메이션, 흐름 레이아웃이라 접히면 아래 그룹이 위로 붙음 -->
+  <div class="mp-menu-accordion" style="position:absolute; left:186px; top:416px; width:456px; display:flex; flex-direction:column; gap:86px;">
+
+   <!-- 차량 관리 Accordion 1 -->
+   <div class="mp-menu-group" style="display:flex; flex-direction:column; width:100%;">
+    <div class="mp-menu-header is-open" role="button" tabindex="0" aria-expanded="true" style="border-top:1px solid #c1c1c1; display:flex; align-items:center; justify-content:space-between; padding:26px 0; cursor:pointer; user-select:none;">
+      <span style="font-size:20px; font-weight:700; color:black; text-transform:uppercase; line-height:1.3;">차량 관리</span>
+      <span class="material-symbols-outlined mp-menu-chevron" style="font-size:24px;">keyboard_arrow_down</span>
+    </div>
+    <div class="mp-menu-group-body is-open" style="--open-max-height:240px;">
+
+      <!-- 내 차 관리  h:60 pl:34 gap:12 -->
+      <div class="mp-menu-item" onclick="openComingSoon(event)" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">garage</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">내 차 관리</span>
+      </div>
+
+      <!-- 내 차 정보 -->
+      <div class="mp-menu-item" onclick="openComingSoon(event)" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">directions_car</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">내 차 정보</span>
+      </div>
+
+      <!-- 정비 및 서비스 센터 예약 -->
+      <div class="mp-menu-item" onclick="openComingSoon(event)" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">car_repair</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">정비 및 서비스 센터 예약</span>
+      </div>
+
+      <!-- 소모품 구입 -->
+      <div class="mp-menu-item" onclick="openComingSoon(event)" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">local_mall</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">소모품 구입</span>
+      </div>
+    </div>
+   </div>
+
+   <!-- 구매 및 신청 관리 Accordion 2 -->
+   <div class="mp-menu-group" style="display:flex; flex-direction:column; width:100%;">
+    <div class="mp-menu-header is-open" role="button" tabindex="0" aria-expanded="true" style="border-top:1px solid #c1c1c1; display:flex; align-items:center; justify-content:space-between; padding:26px 0; cursor:pointer; user-select:none;">
+      <span style="font-size:20px; font-weight:700; color:black; text-transform:uppercase; line-height:1.3;">구매 및 신청 관리</span>
+      <span class="material-symbols-outlined mp-menu-chevron" style="font-size:24px;">keyboard_arrow_down</span>
+    </div>
+    <div class="mp-menu-group-body is-open" style="--open-max-height:180px;">
+
+      <!-- 나의 관심 차량 -->
+      <div class="mp-menu-item" onclick="openComingSoon(event)" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">favorite</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">나의 관심 차량</span>
+      </div>
+
+      <!-- 시승 신청 및 상담 내역 -->
+      <div class="mp-menu-item" onclick="location.href='test-drive.html'" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">headset_mic</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">시승 신청 및 상담 내역</span>
+      </div>
+
+      <!-- 계약 및 출고 대기 현황 -->
+      <div class="mp-menu-item" onclick="openComingSoon(event)" style="width:100%; height:60px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+        <div style="background:black; width:36px; height:36px; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span class="material-symbols-outlined" style="font-size:24px; color:#fff;">hourglass</span>
+        </div>
+        <span style="font-size:16px; font-weight:600; color:black; text-transform:uppercase; line-height:1.3; flex:1;">계약 및 출고 대기 현환</span>
+      </div>
+    </div>
+   </div>
+  </div>
+  </div><!-- /.mp-sidebar -->
+
+  <!-- ════════════════════════
+       카드 1 — 내 차량 정보
+       left:810 top:130 w:924 h:306
+  ════════════════════════ -->
+  <div class="mp-card mp-card1">
+  <div style="position:absolute; left:810px; top:130px; width:924px; height:306px; background:white; border:1px solid #c1c1c1;"></div>
+
+  <!-- 카드1 제목  left:841 top:160 -->
+  <p style="position:absolute; left:841px; top:160px; font-size:18px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">내 차량 정보</p>
+
+  <!-- 카드1 정보 테이블  left:841 top:201 w:862  pt:10 pb:24 border-bottom gap:104 -->
+  <div style="position:absolute; left:841px; top:201px; width:862px; border-bottom:1px solid #c1c1c1; padding-top:10px; padding-bottom:24px; display:flex; gap:104px;">
+    <!-- 왼쪽 컬럼 w:300 -->
+    <div style="width:300px; display:flex; flex-direction:column;">
+      <div class="info-row">
+        <span class="lbl" style="width:150px;">차량번호</span>
+        <span class="val" style="width:150px;">11소 5253</span>
+      </div>
+      <div class="info-row">
+        <span class="lbl" style="width:150px;">모델 연식</span>
+        <span class="val" style="width:150px;">2024년</span>
+      </div>
+      <div class="info-row">
+        <span class="lbl" style="width:150px;">누적 주행거리</span>
+        <span class="val" style="width:150px;">12,870km</span>
+      </div>
+    </div>
+    <!-- 오른쪽 컬럼 w:300 -->
+    <div style="width:300px; display:flex; flex-direction:column;">
+      <div class="info-row">
+        <span class="lbl" style="width:150px;">배터리 / 연료 잔량</span>
+        <span class="val" style="width:150px;">85% / 42km 주행가능</span>
+      </div>
+      <div class="info-row">
+        <span class="lbl" style="width:150px;">타이어 공기압</span>
+        <span class="val" style="width:150px;">Good</span>
+      </div>
+      <div class="info-row">
+        <span class="lbl" style="width:150px;">타이어 공기압</span>
+        <span class="val" style="width:150px;">Good</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 카드1 정비 안내 텍스트  left:841 top:366 -->
+  <p style="position:absolute; left:841px; top:366px; font-size:24px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">
+    다음 정비 주기까지 1,590km 남았습니다.
+  </p>
+
+  <!-- 카드1 정비 예약 버튼  left:1403 top:357 w:300 h:50 gap:28 px:50 py:16 -->
+  <div class="card-btn-filled" onclick="openComingSoon(event)" style="position:absolute; left:1403px; top:357px; width:300px; height:50px; background:black; display:flex; align-items:center; justify-content:center; gap:28px; padding:16px 50px; cursor:pointer;">
+    <span style="font-size:14px; font-weight:600; color:white; line-height:1.3; white-space:nowrap;">정비 예약하기</span>
+  </div>
+  </div><!-- /.mp-card1 -->
+
+  <!-- ════════════════════════
+       카드 2 — 최근 본 차량
+       left:810 top:448 w:924 h:327
+  ════════════════════════ -->
+  <div class="mp-card mp-card2">
+  <div style="position:absolute; left:810px; top:448px; width:924px; height:327px; background:white; border:1px solid #c1c1c1;"></div>
+
+  <!-- 카드2 제목  left:1262 top:477 -->
+  <p style="position:absolute; left:1262px; top:477px; font-size:18px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">최근 본 차량</p>
+
+  <!-- 카드2 차량 이미지  left:849 top:515 w:346 h:194 overflow:hidden -->
+  <div style="position:absolute; left:849px; top:515px; width:346px; height:194px; overflow:hidden;">
+    <img src="images/mypage-img/car-recent.png" alt="Wrangler"
+      style="position:absolute; left:-37.98%; top:-8.5%; width:173.39%; height:116.13%; object-fit:cover;" />
+  </div>
+
+  <!-- 카드2 모델명  left:1262 top:515 -->
+  <p style="position:absolute; left:1262px; top:515px; font-family:'Oswald',sans-serif; font-size:30px; font-weight:700; color:black; line-height:1.3; text-transform:uppercase; white-space:nowrap;">
+    WRANGLER RUBICON 4XE
+  </p>
+
+  <!-- 카드2 사양 테이블  left:1262 top:559 w:433 pb:12 border-bottom -->
+  <div style="position:absolute; left:1262px; top:559px; width:433px; border-bottom:1px solid #c1c1c1; padding-bottom:12px; display:flex; flex-direction:column;">
+    <div class="info-row">
+      <span class="lbl" style="width:150px;">외장 색상</span>
+      <span class="val" style="width:190px;">스틸그레이</span>
+    </div>
+    <div class="info-row">
+      <span class="lbl" style="width:150px;">휠 디자인</span>
+      <span class="val" style="width:190px;">18인치</span>
+    </div>
+    <div class="info-row">
+      <span class="lbl" style="width:150px;">인테리어 컬러</span>
+      <span class="val" style="width:190px;">블랙</span>
+    </div>
+    <div class="info-row">
+      <span class="lbl" style="width:150px;">추가 액세사리</span>
+      <span class="val" style="width:190px;">카고트레이, 테일게이트 테이블</span>
+    </div>
+  </div>
+
+  <!-- 카드2 예상 가격  left:1262 top:712 w:433 -->
+  <div style="position:absolute; left:1262px; top:712px; width:433px; height:34px; display:flex; align-items:center; justify-content:space-between;">
+    <div style="display:flex; align-items:center; height:34px; width:150px; padding:8px 0;">
+      <span style="font-size:14px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">예상 가격</span>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:flex-end; height:34px; padding:8px 0;">
+      <span style="font-size:20px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">84,670,000원</span>
+    </div>
+  </div>
+  </div><!-- /.mp-card2 -->
+
+  <!-- ════════════════════════
+       카드 3 — 최근 활동 내역
+       left:810 top:787 w:371 h:294
+  ════════════════════════ -->
+  <div class="mp-card mp-card3">
+  <div style="position:absolute; left:810px; top:787px; width:371px; height:294px; background:white; border:1px solid #c1c1c1;"></div>
+
+  <!-- 카드3 제목  left:846 top:817 -->
+  <p style="position:absolute; left:846px; top:817px; font-size:18px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">최근 활동 내역</p>
+
+  <!-- 타임라인 바  left:846 top:865 w:8 h:160 -->
+  <div style="position:absolute; left:846px; top:865px; width:8px; height:160px;">
+    <img src="images/mypage-img/timeline-bar.svg" alt=""
+      style="width:100%; height:100%; display:block;" />
+  </div>
+
+  <!-- 활동 1  left:865 top:860 -->
+  <div style="position:absolute; left:865px; top:860px; display:flex; flex-direction:column; line-height:1.3;">
+    <span style="font-size:14px; font-weight:400; color:#757575;">2026.05.20</span>
+    <span style="font-size:16px; font-weight:600; color:black; white-space:nowrap;">서비스 센터 방문 (엔진오일 교환 완료)</span>
+  </div>
+
+  <!-- 활동 2  left:865 top:936 -->
+  <div style="position:absolute; left:865px; top:936px; display:flex; flex-direction:column; line-height:1.3;">
+    <span style="font-size:14px; font-weight:400; color:#757575;">2026.04.15</span>
+    <span style="font-size:16px; font-weight:600; color:black; white-space:nowrap;">렝귤러 시승 완료 (강남 전시장 렉스모터스)</span>
+  </div>
+
+  <!-- 활동 3  left:865 top:1012 -->
+  <div style="position:absolute; left:865px; top:1012px; display:flex; flex-direction:column; line-height:1.3;">
+    <span style="font-size:14px; font-weight:400; color:#757575;">2026.03.10</span>
+    <span style="font-size:16px; font-weight:600; color:black; white-space:nowrap;">신규 차량 견적 저장</span>
+  </div>
+  </div><!-- /.mp-card3 -->
+
+  <!-- ════════════════════════
+       카드 4 — Jeep Wave 전용 이벤트
+       left:1193 top:787 w:541 h:294
+  ════════════════════════ -->
+  <div class="mp-card mp-card4">
+  <div style="position:absolute; left:1193px; top:787px; width:541px; height:294px; background:white; border:1px solid #c1c1c1;"></div>
+
+  <!-- 카드4 제목  left:1225 top:817 -->
+  <p style="position:absolute; left:1225px; top:817px; font-size:18px; font-weight:600; color:black; line-height:1.3; text-transform:capitalize; white-space:nowrap;">
+    jeep wave 전용 이벤트
+  </p>
+
+  <!-- Jeep Wave 핸드 아이콘  left:1283 top:865 w:69 h:97 -->
+  <div style="position:absolute; left:1283px; top:865px; width:69px; height:97px;">
+    <img src="images/mypage-img/wave-hand.svg" alt=""
+      style="width:100%; height:100%; display:block; object-fit:contain;" />
+  </div>
+
+  <!-- Jeep Wave 워드마크  left:1231 top:981 w:173 h:31 -->
+  <div style="position:absolute; left:1231px; top:981px; width:173px; height:31px;">
+    <img src="images/mypage-img/wave-wordmark.svg" alt=""
+      style="width:100%; height:100%; display:block; object-fit:contain;" />
+  </div>
+
+  <!-- CARING FOR YOUR FREEDOM  left:1228 top:1026 Oswald SemiBold #FFBA00 15.6px -->
+  <p style="position:absolute; left:1228px; top:1026px; font-family:'Oswald',sans-serif; font-size:15.6px; font-weight:600; color:#ffba00; text-transform:uppercase; line-height:1.6; white-space:nowrap;">
+    caring for your freedom
+  </p>
+
+  <!-- 2026 JEEP CAMP 타이틀  left:1447 top:851 -->
+  <p style="position:absolute; left:1447px; top:851px; font-size:24px; font-weight:700; color:black; line-height:1.3; text-transform:uppercase; white-space:nowrap;">
+    2026 JEEP CAMP
+  </p>
+
+  <!-- 이벤트 상세 정보  left:1447 top:894 w:248 -->
+  <div style="position:absolute; left:1447px; top:894px; width:248px; display:flex; flex-direction:column;">
+    <!-- 기간 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; height:34px;">
+      <div style="display:flex; align-items:center; width:74px; padding:8px 0;">
+        <span style="font-size:14px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">기간</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:flex-end; width:150px; padding:8px 0;">
+        <span style="font-size:14px; font-weight:400; color:black; line-height:1.3; text-align:right; white-space:nowrap;">7월 10일 ~ 7월 16일</span>
+      </div>
+    </div>
+    <!-- 장소 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; height:34px;">
+      <div style="display:flex; align-items:center; width:74px; padding:8px 0;">
+        <span style="font-size:14px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">장소</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:flex-end; width:150px; padding:8px 0;">
+        <span style="font-size:14px; font-weight:400; color:black; line-height:1.3; text-align:right; white-space:nowrap;">휘닉스 평창</span>
+      </div>
+    </div>
+    <!-- 프로그램 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; height:34px;">
+      <div style="display:flex; align-items:center; width:74px; padding:8px 0;">
+        <span style="font-size:14px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">프로그램</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:flex-end; width:150px; padding:8px 0;">
+        <span style="font-size:14px; font-weight:400; color:black; line-height:1.3; text-align:right; white-space:nowrap;">오프로드 파크 및 코스 체험</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 참가 신청하기 버튼  left:1447 top:1011 w:248 h:40 border-black px:50 py:16 gap:28 -->
+  <div class="card-btn-outline" onclick="openComingSoon(event)" style="position:absolute; left:1447px; top:1011px; width:248px; height:40px; border:1px solid black; display:flex; align-items:center; justify-content:center; gap:28px; padding:16px 50px; cursor:pointer;">
+    <span style="font-size:14px; font-weight:600; color:black; line-height:1.3; white-space:nowrap;">참가 신청하기</span>
+  </div>
+  </div><!-- /.mp-card4 -->
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="footer-inner">
+      <a class="footer-logo" href="jeep.html"><img src="images/main/logo.png" alt="Jeep" /></a>
+      <div class="footer-cols">
+        <details class="footer-accordion">
+          <summary>모델소개</summary>
+          <div class="footer-col-body"><ul>
+            <li><a href="#" onclick="openComingSoon(event)">Wrangler</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Wrangler 4xe</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Gladiator</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Grand Cherokee L</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Grand Cherokee</a></li>
+          </ul></div>
+        </details>
+        <details class="footer-accordion">
+          <summary>3D 모델보기</summary>
+          <div class="footer-col-body"><ul>
+            <li><a href="#" onclick="openComingSoon(event)">Wrangler</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Wrangler 4xe</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Gladiator</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Grand Cherokee L</a></li>
+            <li><a href="#" onclick="openComingSoon(event)">Grand Cherokee</a></li>
+          </ul></div>
+        </details>
+        <details class="footer-accordion">
+          <summary>구입문의</summary>
+          <div class="footer-col-body"><ul>
+            <li><a href="#" onclick="openComingSoon(event)" class="kr">프로모션</a></li>
+            <li><a href="test-drive.html" class="kr">시승 신청</a></li>
+            <li><a href="quote.html" class="kr">견적 요청</a></li>
+            <li><a href="find-dealer.html" class="kr">전시장/서비스센터 검색</a></li>
+          </ul></div>
+        </details>
+        <details class="footer-accordion">
+          <summary>서비스 프로그램</summary>
+          <div class="footer-col-body"><ul>
+            <li><a href="#" onclick="openComingSoon(event)" class="kr">서비스 캠페인</a></li>
+            <li><a href="#" onclick="openComingSoon(event)" class="kr">연장보증 프로그램</a></li>
+            <li><a href="#" onclick="openComingSoon(event)" class="kr">소모품 교환 프로그램</a></li>
+            <li><a href="#" onclick="openComingSoon(event)" class="kr">EDR</a></li>
+          </ul></div>
+        </details>
+        <div class="footer-col-group">
+          <details class="footer-accordion">
+            <summary>부품 및 악세서리</summary>
+            <div class="footer-col-body"><ul>
+              <li><a href="#" onclick="openComingSoon(event)" class="kr">JEEP 부품 가격정보</a></li>
+              <li><a href="#" onclick="openComingSoon(event)" class="kr">전기차 배터리 정보</a></li>
+            </ul></div>
+          </details>
+          <details class="footer-accordion">
+            <summary>멤버십</summary>
+            <div class="footer-col-body"><ul>
+              <li><a href="mypage.html" class="kr">지프 웨이브 멤버십</a></li>
+            </ul></div>
+          </details>
+        </div>
+        <div class="footer-col-group">
+          <details class="footer-accordion">
+            <summary>고객 지원 및 문의</summary>
+            <div class="footer-col-body"><ul>
+              <li><a href="#" onclick="openComingSoon(event)" class="kr">서비스 네트워크</a></li>
+              <li><a href="#" onclick="openComingSoon(event)" class="kr">정비자료</a></li>
+              <li><a href="#" onclick="openComingSoon(event)" class="kr">자동차 전자제어장치 업데이트</a></li>
+              <li><a href="#" onclick="openComingSoon(event)" class="kr">자동차 교환환불제도 안내</a></li>
+            </ul></div>
+          </details>
+          <div class="footer-follow-wrap">
+            <p class="footer-follow-title">Follow Us</p>
+            <div class="footer-social">
+              <a href="#" onclick="openComingSoon(event)" aria-label="Instagram"><img src="images/main/footer-icon-instagram.svg" width="18" height="18" alt="" /></a>
+              <a href="#" onclick="openComingSoon(event)" aria-label="카카오톡"><img src="images/main/footer-icon-kakao.png" width="20" height="18" alt="" /></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>©2025 FCA US LLC. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+</div>
+</div>
+
+<script>
+  (function () {
+    var DESIGN_WIDTH = 1920;
+    var TABLET_BREAKPOINT = 1024;
+    var page = document.querySelector('.page');
+    var outer = document.querySelector('.scale-outer');
+    function update() {
+      // 모바일/태블릿(1024px 미만)은 흐름 레이아웃(.mp-sidebar/.mp-card 등)으로 전환되므로
+      // 더 이상 비율 축소를 적용하지 않음 — 다른 페이지와 동일한 패턴
+      if (window.innerWidth < TABLET_BREAKPOINT) {
+        document.documentElement.style.setProperty('--page-scale', 1);
+        page.style.transform = '';
+        outer.style.height = '';
+        return;
+      }
+      var scale = Math.min(1, window.innerWidth / DESIGN_WIDTH);
+      document.documentElement.style.setProperty('--page-scale', scale);
+      page.style.transform = 'translateX(-50%) scale(' + scale + ')';
+      outer.style.height = (page.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
+
+<script>
+  (function () {
+    /* ── PC 좌측 메뉴 아코디언(차량관리/구매 및 신청관리): 헤더 클릭 시 해당 그룹만 접힘/펼침.
+       흐름 레이아웃이라 한 그룹을 접으면 아래 그룹이 자연스럽게 위로 붙어 올라옴. */
+    var headers = document.querySelectorAll('.mp-menu-accordion .mp-menu-header');
+    headers.forEach(function (header) {
+      function toggle() {
+        var open = !header.classList.contains('is-open');
+        header.classList.toggle('is-open', open);
+        header.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var body = header.nextElementSibling;
+        if (body && body.classList.contains('mp-menu-group-body')) {
+          body.classList.toggle('is-open', open);
+        }
+      }
+      header.addEventListener('click', toggle);
+      header.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    });
+  })();
+</script>
+
+<script>
+  (function () {
+    /* ── 모바일 LNB 드롭다운: PC 좌측 LNB(.mp-menu-label/.mp-menu-header/.mp-menu-item)를
+       그대로 복제해서 패널에 채워 넣음 — 메뉴 데이터를 별도로 하드코딩하지 않음.
+       PC용 원본 엘리먼트는 건드리지 않고(display:none으로 모바일에서만 숨김), 복제본만 사용. */
+    var panel = document.getElementById('mpMobileLnbPanel');
+    var currentLabel = document.getElementById('mpMobileLnbCurrent');
+    if (!panel) return;
+
+    var sourceItems = document.querySelectorAll(
+      '.mp-sidebar .mp-menu-header, .mp-sidebar .mp-menu-item'
+    );
+    var firstItemText = null;
+    sourceItems.forEach(function (el) {
+      var clone = el.cloneNode(true);
+      panel.appendChild(clone);
+      if (!firstItemText && el.classList.contains('mp-menu-item')) {
+        var label = el.querySelector(':scope > span');
+        if (label) firstItemText = label.textContent.trim();
+      }
+    });
+    // 기존 PC LNB에 별도의 active 상태가 없으므로(임의로 새로 만들지 않음),
+    // 마이페이지 메인 대시보드에서는 첫 번째 메뉴 항목을 현재 메뉴로 표시함
+    if (currentLabel && firstItemText) currentLabel.textContent = firstItemText;
+
+    var wrap = document.querySelector('.mp-mobile-lnb');
+    var toggle = document.getElementById('mpMobileLnbToggle');
+    var overlay = document.getElementById('mpMobileLnbOverlay');
+    if (toggle && wrap) {
+      toggle.addEventListener('click', function () {
+        var open = wrap.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        /* 헤더 햄버거 메뉴와 동시에 열리지 않도록, 다른 모바일 메뉴에게 닫힘을 알림 */
+        if (open) {
+          window.dispatchEvent(new CustomEvent('jeep:mobile-menu-open', { detail: { source: 'mypage-lnb' } }));
+        }
+      });
+    }
+    if (overlay && wrap && toggle) {
+      overlay.addEventListener('click', function () {
+        wrap.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    }
+    /* 헤더 햄버거 메뉴가 열리면 이 LNB 드롭다운은 닫는다 */
+    window.addEventListener('jeep:mobile-menu-open', function (e) {
+      if (e.detail && e.detail.source !== 'mypage-lnb' && wrap && wrap.classList.contains('is-open')) {
+        wrap.classList.remove('is-open');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
+</body>
+</html>

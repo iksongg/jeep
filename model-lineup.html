@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeep® | 모델 라인업</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="design-system/tokens.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --page-scale: 1;
+      --black: var(--color-secondary, #000000);
+      --near-black: var(--color-gray-900, #0f0f0f);
+      --gray-light: var(--color-gray-100, #dbdbdb);
+      --gray-bg: var(--color-gray-50, #f4f4f4);
+      --white: var(--color-white, #ffffff);
+      --text-gray: #d7d7d7; /* 디자인시스템에 매칭되는 토큰 없음 */
+      --gray-mid: #5b5b5b; /* 디자인시스템에 매칭되는 토큰 없음 */
+      --gray-desc: #404040; /* 디자인시스템에 매칭되는 토큰 없음 */
+      --green: var(--color-primary, #487f70);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    /* 1920 기준 데스크톱 레이아웃을 1024px까지는 그대로 비율 축소, 그 밑(태블릿/모바일)은 별도 그리드 레이아웃 사용 */
+    .scale-outer {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: var(--white);
+    }
+    .page {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 1920px;
+      transform: translateX(-50%) scale(var(--page-scale));
+      transform-origin: top center;
+      background: var(--white);
+    }
+
+    /* ─── HERO ─── */
+    .lineup-hero {
+      position: relative;
+      width: 100%; height: calc(100vh - 80px);
+      min-height: 700px;
+      margin-top: 80px;
+      overflow: visible;
+    }
+    .lineup-hero-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .lineup-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0) 46%);
+    }
+    .lineup-hero-content {
+      position: absolute;
+      left: 50%; top: 109px;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+      text-align: center; white-space: nowrap;
+    }
+    .lineup-hero-title {
+      font-size: 60px; font-weight: 700;
+      color: var(--white); line-height: 1.3;
+      text-transform: uppercase;
+    }
+    .lineup-hero-title .mobile-break { display: none; }
+    .lineup-hero-tags {
+      display: flex; gap: 50px; align-items: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px; font-weight: 500;
+      color: var(--white);
+    }
+    .lineup-hero-tags a {
+      color: inherit; text-decoration: none;
+      transition: opacity 0.45s;
+    }
+    .lineup-hero-tags a:hover { color: var(--color-primary, #487f70); }
+    .lineup-hero-car-wrap {
+      position: absolute;
+      left: 50%; top: 276px;
+      width: 900px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .lineup-hero-car {
+      width: 100%; height: auto;
+      transform: rotate(-0.78deg);
+    }
+    .lineup-hero-divider {
+      position: absolute;
+      left: 50%; bottom: -60px;
+      width: calc(100% + 90px);
+      max-width: none;
+      transform: translateX(-50%) rotate(-1.38deg);
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    /* ─── MAIN (filter + cards) ─── */
+    .lineup-main {
+      position: relative;
+      max-width: 1860px; margin: 0 auto;
+      padding: 130px 30px 110px;
+      display: grid;
+      grid-template-columns: 456px 1fr;
+      gap: 68px;
+      align-items: start;
+    }
+
+    /* filter sidebar */
+    .filter-group + .filter-group { margin-top: 34px; }
+    .filter-group-title {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+      border-top: 2px solid #424242;
+      background: none; border-left: none; border-right: none; border-bottom: none;
+      font-family: 'Pretendard', sans-serif;
+      font-size: 20px; font-weight: 700; color: var(--black);
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .filter-group-title .material-symbols-outlined {
+      transition: transform 0.6s ease;
+    }
+    .filter-group.collapsed .filter-group-title .material-symbols-outlined {
+      transform: rotate(-180deg);
+    }
+    .filter-list {
+      list-style: none;
+      overflow: hidden;
+      max-height: 300px;
+      transition: max-height 0.6s ease;
+    }
+    .filter-group.collapsed .filter-list { max-height: 0; }
+    .filter-list li {
+      height: 50px;
+      display: flex; align-items: center;
+      font-size: 16px; font-weight: 400; color: var(--black);
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.45s;
+    }
+    .filter-list li.is-active { font-weight: 600; }
+    .filter-list li:hover { color: var(--color-primary, #487f70); }
+
+    /* model cards — 피그마(node 3700:33181)처럼 배경 사진이 카드 전체 폭을 덮고,
+       그 위에 그라데이션 페이드 + (자동차+텍스트) 콘텐츠 그룹이 오버레이되는 구조.
+       예전엔 grid 1fr/370px 로 "사진 칸 | 회색 텍스트 칸"을 반으로 딱 갈라놔서
+       사진이 좁은 칸 안에서만 보이고 카드 대부분이 밋밋한 회색으로 보이는 문제가 있었음. */
+    .lineup-cards { display: flex; flex-direction: column; gap: 15px; }
+    .lineup-card {
+      position: relative;
+      height: 390px;
+      background: var(--gray-bg);
+      overflow: hidden;
+    }
+    .lineup-card-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .lineup-card-fade {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(238,238,238,0) 0%, rgba(238,238,238,0) 32%, var(--gray-bg) 68%);
+    }
+    .lineup-card-content {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 113px;
+      padding-left: 130px;
+    }
+    /* media-wrap 폭은 px로 고정하지 않고, 내부 grid-template-columns:max-content 로
+       자식(글로우/자동차) 중 더 넓게 뻗어나간 쪽에 맞춰 자동으로 결정되게 함.
+       (px로 고정했더니 그림자·자동차 실측 크기보다 좁아서 콘텐츠가 카드 밖으로 튀어나와 잘리던 문제) */
+    .lineup-card-media-wrap {
+      display: grid;
+      grid-template-columns: max-content;
+      justify-items: start;
+      align-items: start;
+      flex-shrink: 0;
+    }
+    .lineup-card-glow,
+    .lineup-card-media {
+      grid-column: 1;
+      grid-row: 1;
+      max-width: none;
+    }
+    .lineup-card-glow {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    /* 카드별 자동차/글로우 위치·크기 (피그마 node 3700:33181 실측값, 카드 높이 390px 기준 px 오프셋).
+       margin-left/top로 서로의 상대 위치만 잡아주면, 그리드가 둘 중 더 넓은 쪽(margin-left+width)에
+       맞춰 media-wrap 폭을 자동으로 결정한다 — 자동차나 그림자 에셋이 바뀌어도 잘리지 않음. */
+    .lineup-card--wrangler .lineup-card-glow  { margin-left: 195.7px; margin-top: 158.73px; width: 462.06px; }
+    .lineup-card--wrangler .lineup-card-media { margin-left: 185.73px; margin-top: 63.57px; width: 423.1px; }
+    .lineup-card--gladiator .lineup-card-glow  { margin-left: 170.33px; margin-top: 180.96px; width: 434.88px; }
+    .lineup-card--gladiator .lineup-card-media { margin-left: 117.78px; margin-top: 51.87px; width: 540.88px; }
+    .lineup-card--cherokee .lineup-card-glow  { margin-left: 170.33px; margin-top: 190.32px; width: 453px; }
+    .lineup-card--cherokee .lineup-card-media { margin-left: 118.69px; margin-top: 43.29px; width: 540.88px; }
+    .lineup-card-info {
+      position: relative;
+      flex-shrink: 0;
+      width: 370px;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 74px;
+    }
+    .lineup-card-text { display: flex; flex-direction: column; gap: 9px; }
+    .lineup-card-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 50px; font-weight: 700;
+      color: var(--black); text-transform: uppercase;
+      line-height: 1.3;
+    }
+    .lineup-card-desc {
+      font-size: 18px; font-weight: 700;
+      color: var(--gray-desc); line-height: 1.3;
+    }
+    .btn-lineup {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--black); color: var(--white);
+      padding: 10px 34px; width: fit-content;
+      font-size: 16px; font-weight: 600;
+      font-family: 'Pretendard', sans-serif;
+      text-transform: uppercase; text-decoration: none;
+      transition: background 0.45s;
+    }
+    .btn-lineup:hover { background: var(--color-primary, #487f70); }
+
+    /* 태블릿/모바일 전용 퀵 모델 선택 필 + 스크롤 인디케이터 (데스크톱에서는 숨김) */
+    .lineup-mobile-select { display: none; }
+    .lineup-scroll-indicator { display: none; }
+    /* jeep.html 메인화면 스크롤 인디케이터와 동일한 모양/애니메이션 재사용 */
+    .lineup-scroll-label { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 200; color: #555; letter-spacing: 0.04em; }
+    .lineup-scroll-arrow {
+      font-size: 34px !important; color: #000;
+      font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' 0, 'opsz' 24;
+      animation: lineup-scroll-bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes lineup-scroll-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .lineup-scroll-arrow { animation: none; }
+      .lineup-scroll-indicator { transition-duration: 0.01ms !important; }
+    }
+
+    /* ══════════════════════ NAV: 1024px 이상에서는 페이지와 같은 비율로 축소 동기화 ══════════════════════ */
+    @media (min-width: 1024px) {
+      body nav.__jeep-nav {
+        left: 50% !important;
+        transform: translateX(-50%) scale(var(--page-scale, 1)) !important;
+        transform-origin: top center !important;
+      }
+    }
+
+    /* ══════════════════════ TABLET (769px ~ 1023px): 비율 축소 대신 그리드 레이아웃 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; }
+      .scale-outer { width: 100%; height: auto !important; overflow: visible; }
+      .page {
+        position: static; width: 100%; height: auto; overflow: visible;
+        transform: none !important;
+      }
+
+      /* nav: 모바일+태블릿 nav 스타일은 components/header.js 컴포넌트 안으로 합쳐짐 */
+
+      /* ── HERO ── */
+      .lineup-hero { margin-top: 56px; height: 62vw; min-height: 340px; max-height: 560px; overflow: hidden; }
+      .lineup-hero-content {
+        position: relative; z-index: 2; left: 0; top: 0; transform: none;
+        width: 100%;
+        align-items: center; text-align: center; white-space: normal;
+        padding: 32px 24px 0; gap: 14px;
+      }
+      .lineup-hero-title { font-size: 36px; white-space: normal; }
+      .lineup-hero-title .mobile-break { display: inline; }
+      .lineup-hero-tags { display: none; } /* 모바일 피그마엔 해시태그 대신 아래 퀵셀렉트 필로 대체 */
+      .lineup-hero-car-wrap { left: 50%; top: auto; bottom: 0; width: 72%; }
+      .lineup-hero-divider { bottom: -30px; }
+
+      /* ── 데스크톱 드롭다운 필터는 숨기고, 피그마 모바일뷰(node 4073:53572)의 퀵 모델 선택 필로 대체 ── */
+      .lineup-filter { display: none; }
+      .lineup-mobile-select {
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 24px 24px 0;
+      }
+      .mobile-select-btn {
+        display: flex; align-items: center; justify-content: center;
+        height: 48px; width: 100%;
+        border: 1px solid var(--black); background: var(--white); color: var(--black);
+        font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 500;
+        text-transform: uppercase; text-decoration: none;
+        transition: background 0.45s, color 0.45s;
+      }
+      .mobile-select-btn.is-active { background: var(--black); color: var(--white); }
+      .lineup-scroll-indicator {
+        display: flex; flex-direction: column; align-items: center; gap: 5px;
+        padding: 28px 0 32px;
+        transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+      }
+      .lineup-scroll-indicator.is-hidden { opacity: 0; visibility: hidden; }
+
+      /* ── 카드: 피그마 모바일뷰처럼 사진 위에 텍스트를 오버레이하는 단일 블록 형태 (좌우 여백 없이 화면 꽉 채움) ── */
+      .lineup-main { max-width: none; padding: 0 0 60px; display: block; }
+      .lineup-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+      .lineup-card {
+        height: auto; aspect-ratio: 402 / 465;
+        display: block;
+      }
+      .lineup-card-content { display: contents; }
+      .lineup-card-media-wrap { display: block; position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+      .lineup-card-glow, .lineup-card-media {
+        position: absolute !important;
+        margin: 0 !important;
+        width: auto;
+      }
+      .lineup-card-fade { display: none; }
+      .lineup-card-info {
+        position: absolute; left: 4%; right: 4%; bottom: 7%;
+        width: auto; flex-shrink: initial;
+        background: transparent; padding: 0;
+        justify-content: flex-end; align-items: flex-start; gap: 20px;
+      }
+      /* name/desc/button keep the desktop 50px/18px/16px type scale —
+         피그마 모바일뷰(node 4073:53572)에서도 데스크톱과 동일한 크기를 그대로 씀,
+         줄인 게 실측과 안 맞는 임의 축소였음 */
+      .btn-lineup { width: 100%; }
+
+      /* 카드별 글로우/자동차 위치 (피그마 모바일 node 4073:53572 실측값 기준, 카드 크기 비율%) */
+      .lineup-card--wrangler .lineup-card-glow  { left: 8.7% !important; top: 23.9% !important; width: 92.2% !important; }
+      .lineup-card--wrangler .lineup-card-media { left: 6.9% !important; top: 5.3% !important; width: 84.3% !important; }
+      .lineup-card--gladiator .lineup-card-glow  { left: 7.5% !important; top: 26.2% !important; width: 85.2% !important; }
+      .lineup-card--gladiator .lineup-card-media { left: 1.5% !important; top: 8.5% !important; width: 96% !important; }
+      .lineup-card--cherokee .lineup-card-glow  { left: 8% !important; top: 28% !important; width: 85% !important; }
+      .lineup-card--cherokee .lineup-card-media { left: 3% !important; top: 9% !important; width: 94% !important; }
+    }
+
+    /* ══════════════════════ MOBILE (768px 이하): 카드 1열 + 사이즈 추가 축소 ══════════════════════ */
+    @media (max-width: 768px) {
+      .lineup-hero { height: 100vw; min-height: 300px; }
+      .lineup-hero-title { font-size: 36px; }
+
+      .lineup-main { padding: 0 0 48px; }
+      .lineup-mobile-select { padding: 20px 16px 0; }
+
+      .lineup-cards { grid-template-columns: 1fr; gap: 0; }
+    }
+
+  </style>
+</head>
+<body>
+
+<script src="components/header.js"></script>
+<script src="components/modal.js"></script>
+
+<div class="scale-outer">
+<div class="page">
+
+<!-- ═══ HERO ═══ -->
+<section class="lineup-hero">
+  <img class="lineup-hero-bg" src="images/model-lineup-img/hero-bg.png" alt="" />
+  <div class="lineup-hero-overlay"></div>
+  <div class="lineup-hero-content">
+    <h1 class="lineup-hero-title">세대를 넘어,<br class="mobile-break"> 자유를 달리다</h1>
+    <div class="lineup-hero-tags">
+      <a href="#" onclick="openComingSoon(event)">WRANGLER</a>
+      <a href="#" onclick="openComingSoon(event)">GRAND CHEROKEE</a>
+      <a href="#" onclick="openComingSoon(event)">GLADIATOR</a>
+    </div>
+  </div>
+  <div class="lineup-hero-car-wrap">
+    <img class="lineup-hero-car" src="images/model-lineup-img/hero-car.png" alt="Jeep" />
+  </div>
+  <img class="lineup-hero-divider" src="images/model-lineup-img/hero-divider.svg" alt="" />
+</section>
+
+<!-- ═══ 태블릿/모바일 전용 퀵 모델 선택 (피그마 모바일뷰 기준) ═══ -->
+<div class="lineup-mobile-select">
+  <a href="#card-wrangler" class="mobile-select-btn is-active" onclick="selectMobileModel(event, this)">WRANGLER</a>
+  <a href="#card-gladiator" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GLADIATOR</a>
+  <a href="#card-cherokee" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GRAND CHEROKEE</a>
+</div>
+<div class="lineup-scroll-indicator" id="lineupScrollIndicator" aria-hidden="true">
+  <span class="lineup-scroll-label">scroll</span>
+  <span class="material-symbols-outlined lineup-scroll-arrow">arrow_circle_down</span>
+</div>
+
+<!-- ═══ 필터 + 모델 목록 ═══ -->
+<section class="lineup-main">
+  <aside class="lineup-filter">
+    <div class="filter-group">
+      <button type="button" class="filter-group-title" onclick="toggleFilterDropdown(this)">
+        주행 스타일
+        <span class="material-symbols-outlined">keyboard_arrow_down</span>
+      </button>
+      <ul class="filter-list">
+        <li class="is-active" onclick="selectFilterItem(this)">전체</li>
+        <li onclick="selectFilterItem(this)">Wrangler</li>
+        <li onclick="selectFilterItem(this)">Gladiator</li>
+        <li onclick="selectFilterItem(this)">Grand Cherokee</li>
+        <li onclick="selectFilterItem(this)">Compass</li>
+      </ul>
+    </div>
+    <div class="filter-group">
+      <button type="button" class="filter-group-title" onclick="toggleFilterDropdown(this)">
+        탑승 인원
+        <span class="material-symbols-outlined">keyboard_arrow_down</span>
+      </button>
+      <ul class="filter-list">
+        <li onclick="selectFilterItem(this)">2인</li>
+        <li onclick="selectFilterItem(this)">4인</li>
+        <li onclick="selectFilterItem(this)">7인</li>
+      </ul>
+    </div>
+    <div class="filter-group">
+      <button type="button" class="filter-group-title" onclick="toggleFilterDropdown(this)">
+        가격대
+        <span class="material-symbols-outlined">keyboard_arrow_down</span>
+      </button>
+      <ul class="filter-list">
+        <li onclick="selectFilterItem(this)">5000만원 이하</li>
+        <li onclick="selectFilterItem(this)">5000만원~7000만원</li>
+        <li onclick="selectFilterItem(this)">7000만원 이상</li>
+      </ul>
+    </div>
+  </aside>
+
+  <div class="lineup-cards">
+    <article class="lineup-card lineup-card--wrangler" id="card-wrangler">
+      <img class="lineup-card-bg" src="images/model-lineup-img/wrangler-bg.png" alt="" />
+      <div class="lineup-card-fade"></div>
+      <div class="lineup-card-content">
+        <div class="lineup-card-media-wrap">
+          <img class="lineup-card-glow" src="images/model-lineup-img/wrangler-glow.svg" alt="" />
+          <img class="lineup-card-media" src="images/model-lineup-img/wrangler-car.png" alt="Jeep Wrangler" />
+        </div>
+        <div class="lineup-card-info">
+          <div class="lineup-card-text">
+            <h2 class="lineup-card-name">Wrangler</h2>
+            <p class="lineup-card-desc">전설의 오프로드 아이콘<br>2.0 터보 · 4xe 하이브리드</p>
+          </div>
+          <a href="quote.html" class="btn-lineup">모델 상세보기</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="lineup-card lineup-card--gladiator" id="card-gladiator">
+      <img class="lineup-card-bg" src="images/model-lineup-img/gladiator-bg.png" alt="" />
+      <div class="lineup-card-fade"></div>
+      <div class="lineup-card-content">
+        <div class="lineup-card-media-wrap">
+          <img class="lineup-card-glow" src="images/model-lineup-img/gladiator-glow.svg" alt="" />
+          <img class="lineup-card-media" src="images/model-lineup-img/gladiator-car.png" alt="Jeep Gladiator" />
+        </div>
+        <div class="lineup-card-info">
+          <div class="lineup-card-text">
+            <h2 class="lineup-card-name">Gladiator</h2>
+            <p class="lineup-card-desc">픽업의 실용성과 오프로드 성능<br>어디든 갈 수 있는 자유</p>
+          </div>
+          <a href="quote.html" class="btn-lineup">모델 상세보기</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="lineup-card lineup-card--cherokee" id="card-cherokee">
+      <img class="lineup-card-bg" src="images/model-lineup-img/grandcherokee-bg.png" alt="" />
+      <div class="lineup-card-fade"></div>
+      <div class="lineup-card-content">
+        <div class="lineup-card-media-wrap">
+          <img class="lineup-card-glow" src="images/model-lineup-img/grandcherokee-glow.svg" alt="" />
+          <img class="lineup-card-media" src="images/model-lineup-img/grandcherokee-car.png" alt="Jeep Grand Cherokee" />
+        </div>
+        <div class="lineup-card-info">
+          <div class="lineup-card-text">
+            <h2 class="lineup-card-name">Grand Cherokee</h2>
+            <p class="lineup-card-desc">프리미엄 SUV의<br>온로드와 오프로드의 완벽한 균형</p>
+          </div>
+          <a href="quote.html" class="btn-lineup">모델 상세보기</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ═══ FOOTER (공용 컴포넌트) ═══ -->
+<script src="components/footer.js"></script>
+
+</div>
+</div>
+
+<script>
+  function selectMobileModel(e, btn) {
+    document.querySelectorAll('.mobile-select-btn').forEach(function (b) {
+      b.classList.remove('is-active');
+    });
+    btn.classList.add('is-active');
+  }
+
+  function selectFilterItem(li) {
+    var list = li.parentElement;
+    list.querySelectorAll('li').forEach(function (item) {
+      item.classList.remove('is-active');
+    });
+    li.classList.add('is-active');
+  }
+
+  /* 태블릿/모바일(<=1023px)에서는 드롭다운처럼 동작: 하나 열리면 나머지는 자동으로 닫힘.
+     데스크톱(>=1024px)에서는 기존처럼 서로 독립적으로 열고 닫힘. */
+  function toggleFilterDropdown(btn) {
+    var group = btn.parentElement;
+    if (window.innerWidth <= 1023) {
+      var wasOpen = !group.classList.contains('collapsed');
+      document.querySelectorAll('.lineup-filter .filter-group').forEach(function (g) {
+        g.classList.add('collapsed');
+      });
+      if (!wasOpen) group.classList.remove('collapsed');
+    } else {
+      group.classList.toggle('collapsed');
+    }
+  }
+
+  (function () {
+    var groups = document.querySelectorAll('.lineup-filter .filter-group');
+    function syncFilterMode() {
+      var isDropdownMode = window.innerWidth <= 1023;
+      groups.forEach(function (g) {
+        if (isDropdownMode) g.classList.add('collapsed');
+        else g.classList.remove('collapsed');
+      });
+    }
+    window.addEventListener('resize', syncFilterMode);
+    window.addEventListener('load', syncFilterMode);
+    syncFilterMode();
+
+    document.addEventListener('click', function (e) {
+      if (window.innerWidth <= 1023 && !e.target.closest('.lineup-filter')) {
+        groups.forEach(function (g) { g.classList.add('collapsed'); });
+      }
+    });
+  })();
+
+  /* 1920 기준 데스크톱 캔버스를 1024px까지 비율 축소 (main 페이지와 동일 방식) */
+  (function () {
+    var DESIGN_WIDTH = 1920;
+    var TABLET_BREAKPOINT = 1024;
+    var page = document.querySelector('.page');
+    var outer = document.querySelector('.scale-outer');
+    function update() {
+      if (window.innerWidth < TABLET_BREAKPOINT) {
+        document.documentElement.style.setProperty('--page-scale', 1);
+        page.style.transform = '';
+        outer.style.height = '';
+        return;
+      }
+      var scale = Math.min(1, window.innerWidth / DESIGN_WIDTH);
+      document.documentElement.style.setProperty('--page-scale', scale);
+      page.style.transform = 'translateX(-50%) scale(' + scale + ')';
+      outer.style.height = (page.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
+<script>
+  (function () {
+    // 스크롤 인디케이터: jeep.html 메인화면과 동일하게, 히어로가 충분히 보이는 동안만 표시
+    var indicator = document.getElementById('lineupScrollIndicator');
+    var hero = document.querySelector('.lineup-hero');
+    if (!indicator || !hero || typeof IntersectionObserver === 'undefined') return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        indicator.classList.toggle('is-hidden', entry.intersectionRatio < 0.6);
+      });
+    }, { threshold: [0, 0.6, 1] });
+    observer.observe(hero);
+  })();
+</script>
+
+</body>
+</html>

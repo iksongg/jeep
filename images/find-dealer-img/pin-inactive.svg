@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="fmd_bad">
+<mask id="mask0_0_96" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="28" height="28">
+<rect id="Bounding box" width="28" height="28" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_0_96)">
+<path id="fmd_bad_2" d="M13.8889 27.2222C10.2366 24.1143 7.50868 21.2277 5.70521 18.5621C3.90174 15.8966 3 13.4296 3 11.1611C3 7.75833 4.09456 5.04745 6.28368 3.02847C8.4728 1.00949 11.0079 0 13.8889 0C16.7699 0 19.305 1.00949 21.4941 3.02847C23.6832 5.04745 24.7778 7.75833 24.7778 11.1611C24.7778 13.4296 23.876 15.8966 22.0726 18.5621C20.2691 21.2277 17.5412 24.1143 13.8889 27.2222Z" fill="black"/>
+</g>
+</g>
+</svg>

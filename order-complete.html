@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeep® | 결제완료</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link rel="stylesheet" href="design-system/tokens.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root { --page-scale: 1; }
+
+    html, body { overflow-x: hidden; }
+    html { background: #f8f8f8; }
+
+    body {
+      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+      background: #f8f8f8;
+    }
+
+    /* 1920 기준 데스크톱 레이아웃을 1024px까지는 그대로 비율 축소 */
+    .scale-outer {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: #f8f8f8;
+    }
+    .page {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 1920px;
+      transform: translateX(-50%) scale(var(--page-scale));
+      transform-origin: top center;
+      background: #f8f8f8;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 384px;
+      margin-top: 80px;
+      overflow: visible;
+    }
+    .hero-bg-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      left: 0; top: -23.31%;
+      width: 114.64%; height: 166.88%;
+      object-fit: cover;
+    }
+    .hero-gradient {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.34) 21.6%, rgba(255,255,255,0) 70%);
+    }
+    .hero-ellipse {
+      position: absolute;
+      left: 1211px; top: 297px;
+      width: 419px; height: 181px;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .hero-ellipse img {
+      width: 509.229px; height: 216.427px;
+      transform: rotate(-9.94deg);
+    }
+    .hero-car {
+      position: absolute;
+      left: 1220px; top: 131px;
+      width: 518px; height: 344px;
+      overflow: hidden;
+    }
+    .hero-car img {
+      position: absolute;
+      left: -2.45%; top: 0;
+      width: 103.76%; height: 100%;
+      object-fit: cover;
+    }
+    .hero-text {
+      position: absolute;
+      left: 186px; top: 104px;
+    }
+    .hero-title {
+      font-size: 50px; font-weight: 700;
+      color: white; line-height: 1.3;
+      margin-bottom: 13px;
+    }
+    .hero-sub {
+      font-size: 18px; font-weight: 400;
+      color: white; line-height: 1.6;
+    }
+
+    /* ── MAIN ── */
+    main {
+      padding: 90px 0 80px;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 1548px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── 주문 정보 카드 ── */
+    .order-card {
+      background: white;
+      border: 1px solid #c1c1c1;
+      padding: 30px 30px 30px;
+    }
+    .card-title {
+      font-size: 18px; font-weight: 700;
+      color: black; line-height: 1.3;
+      margin-bottom: 16px;
+    }
+    .order-grid {
+      display: flex;
+      justify-content: space-between;
+    }
+    .order-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+    .info-label {
+      font-size: 16px; font-weight: 600;
+      color: black; line-height: 1.3;
+      white-space: nowrap;
+      min-width: 150px;
+    }
+    .info-value {
+      font-size: 16px; font-weight: 400;
+      color: black; line-height: 1.6;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* ── 전시장 + 진행단계 두 박스 ── */
+    .two-boxes {
+      display: flex;
+      gap: 20px;
+    }
+    .dealer-box {
+      background: white;
+      border: 1px solid #c1c1c1;
+      padding: 30px;
+      width: 604px;
+      height: 269px;
+      flex-shrink: 0;
+    }
+    .dealer-block.divided {
+      border-bottom: 1px solid #c1c1c1;
+      padding: 10px 0;
+    }
+    .dealer-block.spaced {
+      padding-top: 5px;
+    }
+
+    .steps-box {
+      background: white;
+      border: 1px solid #c1c1c1;
+      height: 269px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .steps-inner {
+      width: 801px;
+    }
+
+    /* ── 진행 단계 스텝 ──
+       피그마 구조: 화살표는 스텝과 같은 flex 흐름에 끼지 않고, 스텝 사이 간격 위에
+       절대좌표로 얹힌다. 7개 스텝(80px)+간격(38px)만 flex로 흐르면 788px로
+       .steps-box(924px, padding 30px 제외 864px) 안에 여유 있게 들어가 스크롤이 필요 없다. */
+    .steps-row {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 38px;
+      margin-top: 22px;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 80px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .step-icon-box {
+      position: relative;
+      width: 80px; height: 100px;
+      border: 1px solid #c1c1c1;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-icon-box.active {
+      border: none;
+      background: none;
+      width: 80px; height: 80px;
+    }
+    .step-icon-box img.step-circle {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .step-icon-box img.step-icon {
+      position: absolute;
+      width: 42px; height: 42px;
+      object-fit: contain;
+      z-index: 1;
+    }
+    .step-label {
+      font-size: 16px; font-weight: 400;
+      color: #757575; line-height: 1.6;
+      text-align: center; white-space: nowrap;
+    }
+    .step-label.active {
+      font-weight: 600; color: black;
+    }
+
+    /* 화살표: 플렉스 흐름에서 빠져 스텝 사이 간격 위에 얹히는 절대좌표 커넥터 (피그마 기준 top:38px, 간격 중앙에 고정 left) */
+    .step-arrow {
+      position: absolute;
+      top: 38px;
+      width: 24px; height: 24px;
+      object-fit: contain;
+    }
+    .step-arrow:nth-of-type(1) { left: 94px; }
+    .step-arrow:nth-of-type(2) { left: 212px; }
+    .step-arrow:nth-of-type(3) { left: 330px; }
+    .step-arrow:nth-of-type(4) { left: 448px; }
+    .step-arrow:nth-of-type(5) { left: 566px; }
+    .step-arrow:nth-of-type(6) { left: 684px; }
+
+    /* ── 계약서 섹션 ── */
+    .contract-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 38px;
+      padding: 0;
+    }
+    .contract-title {
+      font-size: 30px; font-weight: 700;
+      color: black; line-height: 1.3;
+    }
+    .contract-buttons {
+      display: flex; flex-direction: column; gap: 15px;
+      width: 768px; flex-shrink: 0;
+    }
+    .btn-outline-black {
+      width: 100%; height: 48px;
+      border: 1px solid black; background: white;
+      font-size: 14px; font-weight: 600; color: black;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.45s, border-color 0.45s;
+    }
+    .btn-black {
+      width: 100%; height: 48px;
+      background: black; border: none;
+      font-size: 14px; font-weight: 600; color: white;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.45s;
+    }
+    .btn-outline-black:hover { color: var(--color-primary, #487f70); border-color: var(--color-primary, #487f70); }
+    .btn-black:hover { background: var(--color-primary, #487f70); }
+
+    .mobile-detail-btn-wrap { display: none; }
+    .steps-grid-mobile { display: none; }
+
+    /* ══════════════════════ NAV: 1024px 이상에서는 페이지와 같은 비율로 축소 동기화 ══════════════════════ */
+    @media (min-width: 1024px) {
+      body nav.__jeep-nav {
+        left: 50% !important;
+        transform: translateX(-50%) scale(var(--page-scale, 1)) !important;
+        transform-origin: top center !important;
+      }
+    }
+
+    /* ══════════════════════ TABLET + MOBILE (1024px 미만): 비율 축소 대신 일반 흐름 레이아웃 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; }
+      .scale-outer { width: 100%; height: auto !important; overflow: visible; }
+      .page { position: static; width: 100%; height: auto; overflow: visible; transform: none !important; }
+
+      /* nav: 모바일+태블릿 nav 스타일은 components/header.js 컴포넌트 안으로 합쳐짐 */
+    }
+
+    /* ══════════════════════ MOBILE (768px 이하) — 피그마 모바일뷰(node 4368:40909) 기준 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; overflow-x: hidden; }
+
+      /* ── HERO ── */
+      .hero { height: 420px; margin-top: 56px; }
+      .hero-gradient { background: linear-gradient(to right, rgba(0,0,0,0.34) 21.6%, rgba(255,255,255,0) 70%); }
+      /* PC와 같은 절대 픽셀이 아니라, PC에서 차량이 히어로 하단보다 자기 높이의 약 26%만큼
+         튀어나오는 비율을 그대로 모바일 치수에 적용 — 차량을 키우지 않고 top만 내려서
+         같은 이미지가 히어로 배경 경계 아래로 내려오게 한다(hero-ellipse도 차량과 같이 이동해
+         그림자 위치가 차량 밑에서 어긋나지 않게 함). hero의 overflow는 원래 hidden이 아니므로
+         돌출 자체는 막혀있지 않았고, main의 padding-top만 돌출량보다 커야 다음 카드의
+         z-index:1 흰 배경에 가려지지 않는다 */
+      .hero-ellipse {
+        position: absolute; left: 18.9%; top: 79.8%;
+        width: 75.8%; height: 31.4%;
+      }
+      .hero-ellipse img { width: 100%; height: 100%; }
+      .hero-car { left: 3.87%; top: 56%; width: 93.65%; height: 59.52%; }
+      .hero-text { left: 24px; right: 24px; top: 10.7%; }
+      .hero-title { font-size: 24px; margin-bottom: 8px; }
+      .hero-sub { font-size: 14px; line-height: 1.5; }
+
+      /* ── MAIN ── */
+      main { padding: 72px 0 48px; }
+      .container { width: 100%; padding: 0 16px; gap: 16px; }
+
+      /* 카드 좌우 패딩은 8px로 타이트하게 (피그마 실측: px-[8px] py-[20px]) */
+      .order-card, .dealer-box, .steps-box { padding: 20px 8px; }
+      /* 진행 단계 박스만 좌우 16px (피그마 실측: 콘텐츠 338px / 박스 370px → 좌우 16px) */
+      .steps-box { padding: 20px 16px; }
+      .card-title { font-size: 16px; margin-bottom: 4px; }
+      /* 진행 단계 제목만 18px 유지 (피그마 실측: 다른 카드 제목은 16px로 축소되지만 이 제목은 그대로) */
+      .steps-box .card-title { font-size: 18px; margin-bottom: 16px; }
+
+      /* 주문 정보: 좌우 2단 → 라벨/값 세로 스택 1열 */
+      .order-grid { flex-direction: column; justify-content: flex-start; gap: 0; }
+      .order-col { width: 100% !important; }
+      /* 피그마 실측: 필드 그룹 자체가 세로(라벨→값) 오토레이아웃, 정렬 좌측, 간격 4px, 패딩 0/12px */
+      .info-row {
+        flex-direction: column; align-items: flex-start; gap: 4px;
+        padding: 12px 0; border-bottom: 1px solid #dbdbdb;
+      }
+      .info-row:last-child { border-bottom: none; }
+      .info-label { min-width: 0; }
+      .info-value { text-align: left; white-space: normal; }
+
+      /* 전시장/담당자 + 진행 단계 박스를 세로로 스택 */
+      .two-boxes { flex-direction: column; gap: 16px; }
+      .dealer-box { width: 100%; height: auto; }
+      .dealer-box .info-row { border-bottom: 1px solid #dbdbdb; }
+      .dealer-block.divided { border-bottom: none; padding: 0; }
+      .dealer-block.spaced { padding-top: 0; }
+
+      .steps-box { display: block; width: 100%; height: auto; overflow: visible; }
+      .steps-inner { width: 100%; }
+
+      /* 진행 단계: 데스크톱의 가로 7단 배열 대신, 피그마 모바일뷰 실측대로
+         3열 그리드(3+3+1)로 재배열. 아이콘/라벨 스타일(.step, .step-icon-box,
+         .step-label)은 데스크톱과 동일하게 재사용하고, 배치만 별도 마크업으로 전환 */
+      .steps-row { display: none; }
+      .steps-grid-mobile {
+        display: flex; flex-direction: column; gap: 49px;
+        width: 100%; max-width: 338px; margin: 22px auto 0;
+      }
+      .steps-grid-row {
+        position: relative;
+        display: flex; align-items: flex-start; justify-content: space-between;
+        width: 100%;
+      }
+      .steps-grid-row.single { justify-content: flex-start; }
+      /* 화살표: 피그마 실측 좌표(top:38px, left:93px/222px)를 행 기준으로 그대로 사용 */
+      .grid-arrow {
+        position: absolute; top: 38px; width: 24px; height: 24px; object-fit: contain;
+      }
+      .grid-arrow.pos-1 { left: 93px; }
+      .grid-arrow.pos-2 { left: 222px; }
+
+      /* 계약서 및 결제 완료 안내: 제목 → 버튼 순으로 세로 스택 */
+      .contract-section {
+        display: flex !important; flex-direction: column; align-items: flex-start;
+        gap: 16px; margin-top: 32px;
+      }
+      .contract-title { font-size: 20px; }
+      .contract-buttons { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<script src="components/header.js"></script>
+<script src="components/modal.js"></script>
+
+<div class="scale-outer">
+<div class="page">
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg-wrap">
+    <img class="hero-bg" src="images/order-complete-img/hero-bg.png" alt="" />
+    <div class="hero-gradient"></div>
+  </div>
+
+  <div class="hero-ellipse">
+    <img src="images/order-complete-img/hero-ellipse.svg" alt="" />
+  </div>
+
+  <div class="hero-car">
+    <img src="images/order-complete-img/hero-car.png" alt="Jeep Wrangler" />
+  </div>
+
+  <div class="hero-text">
+    <div class="hero-title">결제가 정상적으로<br />완료되었습니다.</div>
+    <div class="hero-sub">Jeep는 고객님의 새로운 여정을 응원합니다!</div>
+  </div>
+</section>
+
+<!-- ══ MAIN CONTENT ══ -->
+<main>
+  <div class="container">
+
+    <!-- 주문 정보 카드 -->
+    <div class="order-card">
+      <div class="card-title">주문 정보</div>
+      <div class="order-grid">
+        <!-- 왼쪽: 주문번호 + 결제일시 -->
+        <div class="order-col" style="width:431px;">
+          <div class="info-row">
+            <span class="info-label">주문 번호</span>
+            <span class="info-value">JPC1234567239</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">결제 일시</span>
+            <span class="info-value">2026.06.01 / 14:30</span>
+          </div>
+        </div>
+        <!-- 오른쪽: 결제금액 + 차량가액 + 결제수단 -->
+        <div class="order-col" style="width:565px;">
+          <div class="info-row">
+            <span class="info-label">최종 결제 금액 (계약금)</span>
+            <span class="info-value">3,000,000 원</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">총 차량 가액</span>
+            <span class="info-value">84,670,000 원</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">결제 수단</span>
+            <span class="info-value">삼성카드 (1234-****-****-****) / 6개월 무이자</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전시장 및 담당자 + 진행 단계 -->
+    <div class="two-boxes">
+
+      <!-- 전시장 및 담당자 -->
+      <div class="dealer-box">
+        <div class="card-title">전시장 및 담당자</div>
+        <div class="dealer-block divided">
+          <div class="info-row">
+            <span class="info-label">배정 전시장</span>
+            <span class="info-value">서초 전시장 KCC 모빌리티</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">주소</span>
+            <span class="info-value" style="white-space: normal;">서울특별시 서초구 남부순환로 2219</span>
+          </div>
+        </div>
+        <div class="dealer-block spaced">
+          <div class="info-row">
+            <span class="info-label">담당 키마스터</span>
+            <span class="info-value">김지프 대리</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">연락처</span>
+            <span class="info-value">010-1234-5678</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 진행 단계 -->
+      <div class="steps-box">
+       <div class="steps-inner">
+        <div class="card-title">진행 단계</div>
+
+        <div class="steps-row">
+
+          <!-- STEP 1: 계약완료 (활성) -->
+          <div class="step">
+            <div class="step-icon-box active">
+              <img class="step-circle" src="images/order-complete-img/step-circle-1.svg" alt="" />
+              <img class="step-icon" src="images/order-complete-img/step-icon-contract.svg" alt="" />
+            </div>
+            <span class="step-label active">계약완료</span>
+          </div>
+
+          <!-- 화살표 1 (활성) -->
+          <img class="step-arrow" src="images/order-complete-img/arrow-active.svg" alt="" />
+
+          <!-- STEP 2: 서류 심사 -->
+          <div class="step">
+            <div class="step-icon-box">
+              <img class="step-icon" src="images/order-complete-img/step-icon-review.svg" alt="" />
+            </div>
+            <span class="step-label">서류 심사</span>
+          </div>
+
+          <!-- 화살표 2 (비활성) -->
+          <img class="step-arrow" src="images/order-complete-img/arrow-plain.svg" alt="" />
+
+          <!-- STEP 3: 대금 결제 -->
+          <div class="step">
+            <div class="step-icon-box">
+              <img class="step-icon" src="images/order-complete-img/step-icon-payment.svg" alt="" />
+            </div>
+            <span class="step-label">대금 결제</span>
+          </div>
+
+          <!-- 화살표 3 -->
+          <img class="step-arrow" src="images/order-complete-img/arrow-plain.svg" alt="" />
+
+          <!-- STEP 4: 보험 가입 -->
+          <div class="step">
+            <div class="step-icon-box">
+              <img class="step-icon" src="images/order-complete-img/step-icon-insurance.svg" alt="" />
+            </div>
+            <span class="step-label">보험 가입</span>
+          </div>
+
+          <!-- 화살표 4 -->
+          <img class="step-arrow" src="images/order-complete-img/arrow-plain.svg" alt="" />
+
+          <!-- STEP 5: 차량 등록 -->
+          <div class="step">
+            <div class="step-icon-box">
+              <img class="step-icon" src="images/order-complete-img/step-icon-registration.svg" alt="" />
+            </div>
+            <span class="step-label">차량 등록</span>
+          </div>
+
+          <!-- 화살표 5 -->
+          <img class="step-arrow" src="images/order-complete-img/arrow-plain.svg" alt="" />
+
+          <!-- STEP 6: 차량 검수 -->
+          <div class="step">
+            <div class="step-icon-box">
+              <img class="step-icon" src="images/order-complete-img/step-icon-inspection.svg" alt="" />
+            </div>
+            <span class="step-label">차량 검수</span>
+          </div>
+
+          <!-- 화살표 6 -->
+          <img class="step-arrow" src="images/order-complete-img/arrow-active.svg" alt="" />
+
+          <!-- STEP 7: 인도 대기 -->
+          <div class="step">
+            <div class="step-icon-box active">
+              <img class="step-circle" src="images/order-complete-img/step-circle-7.svg" alt="" />
+              <img class="step-icon" src="images/order-complete-img/step-icon-delivery.svg" alt="" />
+            </div>
+            <span class="step-label">인도 대기</span>
+          </div>
+
+        </div>
+
+        <!-- 진행 단계 (모바일 전용, 피그마 모바일뷰 3열 그리드: 3+3+1) -->
+        <div class="steps-grid-mobile">
+
+          <div class="steps-grid-row">
+            <div class="step">
+              <div class="step-icon-box active">
+                <img class="step-circle" src="images/order-complete-img/step-circle-1.svg" alt="" />
+                <img class="step-icon" src="images/order-complete-img/step-icon-contract.svg" alt="" />
+              </div>
+              <span class="step-label active">계약완료</span>
+            </div>
+            <img class="grid-arrow pos-1" src="images/order-complete-img/arrow-active.svg" alt="" />
+            <div class="step">
+              <div class="step-icon-box">
+                <img class="step-icon" src="images/order-complete-img/step-icon-review.svg" alt="" />
+              </div>
+              <span class="step-label">서류 심사</span>
+            </div>
+            <img class="grid-arrow pos-2" src="images/order-complete-img/arrow-plain.svg" alt="" />
+            <div class="step">
+              <div class="step-icon-box">
+                <img class="step-icon" src="images/order-complete-img/step-icon-payment.svg" alt="" />
+              </div>
+              <span class="step-label">대금 결제</span>
+            </div>
+          </div>
+
+          <div class="steps-grid-row">
+            <div class="step">
+              <div class="step-icon-box">
+                <img class="step-icon" src="images/order-complete-img/step-icon-insurance.svg" alt="" />
+              </div>
+              <span class="step-label">보험 가입</span>
+            </div>
+            <img class="grid-arrow pos-1" src="images/order-complete-img/arrow-plain.svg" alt="" />
+            <div class="step">
+              <div class="step-icon-box">
+                <img class="step-icon" src="images/order-complete-img/step-icon-registration.svg" alt="" />
+              </div>
+              <span class="step-label">차량 등록</span>
+            </div>
+            <img class="grid-arrow pos-2" src="images/order-complete-img/arrow-plain.svg" alt="" />
+            <div class="step">
+              <div class="step-icon-box">
+                <img class="step-icon" src="images/order-complete-img/step-icon-inspection.svg" alt="" />
+              </div>
+              <span class="step-label">차량 검수</span>
+            </div>
+          </div>
+
+          <div class="steps-grid-row single">
+            <div class="step">
+              <div class="step-icon-box active">
+                <img class="step-circle" src="images/order-complete-img/step-circle-7.svg" alt="" />
+                <img class="step-icon" src="images/order-complete-img/step-icon-delivery.svg" alt="" />
+              </div>
+              <span class="step-label active">인도 대기</span>
+            </div>
+          </div>
+
+        </div>
+       </div>
+      </div>
+    </div>
+
+    <!-- 모델 상세보기 (모바일 전용) -->
+    <div class="mobile-detail-btn-wrap">
+      <a href="model-lineup.html" class="btn-black">모델 상세보기</a>
+    </div>
+
+    <!-- 계약서 및 결제 완료 안내 -->
+    <div class="contract-section">
+      <div class="contract-title">계약서 및 결제 완료 안내</div>
+      <div class="contract-buttons">
+        <button class="btn-outline-black" onclick="location.href='mypage.html'">마이페이지 배송 조회</button>
+        <button class="btn-black" onclick="openComingSoon(event)">계약서 다운로드</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══ FOOTER (공용 컴포넌트) ══ -->
+<script src="components/footer.js"></script>
+
+</div>
+</div>
+
+<script>
+  (function () {
+    var DESIGN_WIDTH = 1920;
+    var TABLET_BREAKPOINT = 1024;
+    var page = document.querySelector('.page');
+    var outer = document.querySelector('.scale-outer');
+    function update() {
+      if (window.innerWidth < TABLET_BREAKPOINT) {
+        document.documentElement.style.setProperty('--page-scale', 1);
+        page.style.transform = '';
+        outer.style.height = '';
+        return;
+      }
+      var scale = Math.min(1, window.innerWidth / DESIGN_WIDTH);
+      document.documentElement.style.setProperty('--page-scale', scale);
+      page.style.transform = 'translateX(-50%) scale(' + scale + ')';
+      outer.style.height = (page.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
+</body>
+</html>

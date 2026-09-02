@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Jeep Design System — Foundations
+   Source: Figma "디자인시스템" (node-id 5118-66064)
+     1. Typography   2. Color System   3. Grid System
+   Every page should <link rel="stylesheet" href="design-system/tokens.css">
+   BEFORE its own <style> block, then use these variables/classes instead of
+   redeclaring the same colors/sizes locally.
+   ========================================================================== */
+
+:root {
+  /* ---- Color / Main ----
+     Jeep의 고대비 아이덴티티: black & white가 기본 골격,
+     olive green이 브랜드 개성을 더하는 포인트 컬러 (제한적으로 사용) */
+  --color-black: #000000;   /* 헤더, 푸터, 버튼 등 구조 요소 + 헤드라인 텍스트 */
+  --color-white: #ffffff;   /* 페이지 기본 배경 + 다크 배경 위 텍스트 */
+
+  /* ---- Color / Olive Green ramp (Sub / accent) ---- */
+  --color-olive-50: #edf3f1;   /* 옅은 배경 */
+  --color-olive-100: #cfe0da;  /* 보더, 구분선 */
+  --color-olive-200: #9ec3b7;  /* 비활성 아이콘, 보조 요소 */
+  --color-olive-400: #6c9c8c;  /* 보조 텍스트, 서브 라벨 */
+  --color-olive-700: #487f70;  /* MAIN — 브랜드 메인 포인트 컬러 (통계 라벨, 강조 텍스트) */
+  --color-olive-900: #24403a;  /* 강조 다크, hover 상태 */
+
+  /* ---- Color / Primary·Secondary (의미 기반 별칭) ----
+     실제 컬러값은 위에서 이미 정의된 토큰을 그대로 가리킴 — 값이 두 곳에 따로 존재하지 않도록
+     별칭(alias)으로만 등록. 컴포넌트/페이지에서는 아래 두 변수를 우선 사용할 것. */
+  --color-primary: var(--color-olive-700);   /* 브랜드 메인 포인트 컬러 (버튼 hover, 강조 텍스트, 진행 표시 등) */
+  --color-primary-hover: var(--color-olive-900); /* primary 요소의 hover/active 상태 */
+  --color-secondary: var(--color-black);     /* 구조 요소 — 헤더/푸터 배경, 기본 버튼 배경, 헤드라인 텍스트 */
+
+  /* ---- Color / Gray scale ---- */
+  --color-gray-50: #f4f4f4;   /* 섹션 배경 */
+  --color-gray-100: #dbdbdb;  /* 보더, 구분선 */
+  --color-gray-200: #c1c1c1;  /* 다크 배경 보조 텍스트 / 카드·인풋 보더 */
+  --color-gray-400: #cccccc;  /* 번호, 비활성 요소 */
+  --color-gray-500: #8e8e8e;  /* 캡션/보조 라벨 (스와치 hex 라벨 등) */
+  --color-gray-600: #757575;  /* 비활성 텍스트 */
+  --color-gray-800: #282828;  /* 본문 텍스트 */
+  --color-gray-900: #0f0f0f;  /* 푸터 배경 */
+
+  /* ---- Typography / Font families ----
+     국문: Pretendard (강인하고 견고한 이미지) — 헤드라인부터 본문, UI 텍스트 전반
+     영문: Oswald (직선적이고 힘 있는 조형미) — 배경 타이포, 모델명 등 디스플레이 요소 */
+  --font-kr: 'Pretendard', sans-serif;
+  --font-en: 'Oswald', sans-serif;
+
+  /* ---- Typography / Text styles (size / line-height) ----
+     사용처는 각 변수명 옆 주석 참고. font-weight는 변수명에 포함되지 않으므로
+     실제 사용 시 아래 표를 따라 함께 지정할 것. */
+  --text-display-1-size: 220px; --text-display-1-lh: 1.3; /* Oswald Bold — 섹션 배경 워터마크 */
+  --text-display-2-size: 73px;  --text-display-2-lh: 1.3; /* Oswald Bold — 모델 이름 */
+  --text-h1-size: 60px; --text-h1-lh: 1.3; /* Pretendard Bold — 헤드라인 */
+  --text-h2-size: 55px; --text-h2-lh: 1.3; /* Pretendard Bold — 배너 타이틀 */
+  --text-h3-size: 40px; --text-h3-lh: 1.3; /* Pretendard Bold — 섹션 타이틀 */
+  --text-h4-size: 18px; --text-h4-lh: 1.3; /* Pretendard Bold — 카드 타이틀 */
+  --text-body1-size: 16px; --text-body1-lh: 1.6; /* Pretendard Regular — 섹션 본문 */
+  --text-body2-size: 14px; --text-body2-lh: 1.6; /* Pretendard Regular — 카드 본문 */
+  --text-button-size: 14px; --text-button-lh: 1.3; /* Pretendard SemiBold — 버튼 텍스트 */
+  --text-caption-size: 13px; --text-caption-lh: 1.3; /* Pretendard Regular — 카피라이트, 보조 정보 */
+
+  /* ---- Grid ----
+     7슬롯 그릴의 직선 구조에서 인용한 직각형 그리드가 레이아웃 전반의 기준.
+     히어로 섹션에서만 탈그리드(요소가 프레임 밖으로 나가는 구성)를 허용한다. */
+  --grid-width: 1920px;
+  --grid-columns: 12;
+  --grid-margin: 30px;
+  --grid-gutter: 12px;
+
+  /* ---- Icon sizes (4단계) ---- */
+  --icon-size-sm: 16px;  /* caption */
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;  /* 기본 UI 아이콘 크기 */
+  --icon-size-xl: 32px;
+  --icon-stroke-width: 1.6px; /* 모든 아이콘은 1.6px 선으로 통일 */
+}
+
+/* ==========================================================================
+   Icons — Google Material Symbols
+   전 페이지 공통 설정: Rounded 스타일 · weight 300 · fill off · optical size 24dp
+   (Figma Material Symbols 플러그인 기본값과 동일)
+
+   폰트 로드:
+   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
+   ========================================================================== */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal; font-style: normal;
+  font-size: var(--icon-size-lg);
+  line-height: 1; letter-spacing: normal;
+  text-transform: none; display: inline-block; white-space: nowrap;
+  word-wrap: normal; direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  vertical-align: middle;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  width: 1em; height: 1em; overflow: hidden; /* 폰트 로딩 전/후 리가처 텍스트 폭 점프 방지 */
+}
+
+/* ==========================================================================
+   Typography utility classes
+   ========================================================================== */
+.ds-display-1 { font-family: var(--font-en); font-weight: 700; font-size: var(--text-display-1-size); line-height: var(--text-display-1-lh); }
+.ds-display-2 { font-family: var(--font-en); font-weight: 700; font-size: var(--text-display-2-size); line-height: var(--text-display-2-lh); }
+.ds-h1 { font-family: var(--font-kr); font-weight: 700; font-size: var(--text-h1-size); line-height: var(--text-h1-lh); }
+.ds-h2 { font-family: var(--font-kr); font-weight: 700; font-size: var(--text-h2-size); line-height: var(--text-h2-lh); }
+.ds-h3 { font-family: var(--font-kr); font-weight: 700; font-size: var(--text-h3-size); line-height: var(--text-h3-lh); }
+.ds-h4 { font-family: var(--font-kr); font-weight: 700; font-size: var(--text-h4-size); line-height: var(--text-h4-lh); }
+.ds-body1 { font-family: var(--font-kr); font-weight: 400; font-size: var(--text-body1-size); line-height: var(--text-body1-lh); }
+.ds-body2 { font-family: var(--font-kr); font-weight: 400; font-size: var(--text-body2-size); line-height: var(--text-body2-lh); }
+.ds-button-text { font-family: var(--font-kr); font-weight: 600; font-size: var(--text-button-size); line-height: var(--text-button-lh); }
+.ds-caption { font-family: var(--font-kr); font-weight: 400; font-size: var(--text-caption-size); line-height: var(--text-caption-lh); }
+
+/* ==========================================================================
+   Button components
+   모든 버튼은 라운드 없는 직각(border-radius:0)을 유지한다.
+   filled · outline · text 3종 × enabled/hover/disabled 상태.
+   ========================================================================== */
+.ds-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 16px;
+  font-family: var(--font-kr); font-weight: 600; font-size: 14px;
+  padding: 16px 50px; border-radius: 0; cursor: pointer;
+  text-decoration: none; white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.ds-btn-filled { background: var(--color-black); color: var(--color-white); border: none; }
+.ds-btn-filled:hover { background: var(--color-olive-700); }
+.ds-btn-filled:disabled, .ds-btn-filled.is-disabled { background: var(--color-gray-200); color: var(--color-white); cursor: not-allowed; }
+
+.ds-btn-outline { background: var(--color-white); color: var(--color-black); border: 1px solid var(--color-black); }
+.ds-btn-outline:hover { color: var(--color-olive-700); border-color: var(--color-olive-700); }
+.ds-btn-outline:disabled, .ds-btn-outline.is-disabled { color: var(--color-gray-200); border-color: var(--color-gray-200); cursor: not-allowed; }
+
+.ds-btn-text { background: none; border: none; padding: 11px 20px; color: var(--color-gray-800); }
+.ds-btn-text:hover { color: var(--color-olive-700); }
+.ds-btn-text:disabled, .ds-btn-text.is-disabled { color: var(--color-gray-200); cursor: not-allowed; }
+
+/* ==========================================================================
+   Form elements — 선택 요소는 차체의 직각 프레임을 유지 (라운드 없는 사각형)
+   ========================================================================== */
+.ds-swatch {
+  width: 60px; height: 60px; border-radius: 0; cursor: pointer;
+}
+.ds-swatch--outline { border: 1px solid var(--color-gray-100); }
+
+/* 라디오/체크: 원형 컨트롤 (예외적으로 라운드 허용 — 지프 휠을 상징) */
+.ds-radio-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--color-gray-600);
+  display: flex; align-items: center; justify-content: center;
+}
+.ds-radio-dot.is-checked { background: var(--color-black); border-color: var(--color-black); }
+
+/* ==========================================================================
+   Mobile scrollbar — 스크롤은 유지하되 스크롤바만 시각적으로 숨김
+   1024px 미만에서는 모든 페이지의 실제 스크롤 컨테이너가 html/body이므로
+   (각 페이지의 .scale-outer/.page는 이 구간에서 overflow:visible로 풀림)
+   여기 한 곳에만 적용하면 8개 페이지 전체에 공통 반영된다. overflow:hidden이
+   아니라 스크롤바 렌더링만 제거하는 방식이라 휠/터치 스크롤은 그대로 동작하고,
+   스크롤바가 차지하던 거터 폭도 함께 사라져 콘텐츠 유무에 따라 페이지 폭이
+   미묘하게 달라지던 문제도 함께 없어진다(PhoneMockup iframe 안에서 특히 도드라짐).
+   ========================================================================== */
+@media (max-width: 1023.98px) {
+  html, body {
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;  /* 구형 Edge/IE */
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;             /* Chromium/WebKit(Safari) */
+    width: 0;
+    height: 0;
+  }
+}

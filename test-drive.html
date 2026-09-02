@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeep® | 시승 예약하기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link rel="stylesheet" href="design-system/tokens.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: var(--color-secondary, #000000);
+      --near-black: var(--color-gray-900, #0f0f0f);
+      --gray-light: var(--color-gray-100, #dbdbdb);
+      --gray-bg: var(--color-gray-50, #f4f4f4);
+      --white: var(--color-white, #ffffff);
+      --text-gray: #d7d7d7; /* 디자인시스템에 매칭되는 토큰 없음 */
+      --gray-mid: #5b5b5b; /* 디자인시스템에 매칭되는 토큰 없음 */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    :root { --page-scale: 1; }
+
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    /* 1920 기준 데스크톱 레이아웃을 1024px까지는 그대로 비율 축소 */
+    .scale-outer {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: var(--white);
+    }
+    .page {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 1920px;
+      transform: translateX(-50%) scale(var(--page-scale));
+      transform-origin: top center;
+      background: var(--white);
+    }
+
+    /* ─────────────── HERO ─────────────── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 855px;
+      margin-top: 80px;
+      overflow: visible;
+    }
+
+    .hero-bg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-car-wrap {
+      position: absolute;
+      left: 501px;
+      top: 172px;
+      width: 947.737px;
+      height: 746.669px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .hero-car {
+      width: 866px;
+      height: 628px;
+      object-fit: cover;
+      transform: rotate(8.32deg);
+    }
+
+    .hero-content {
+      position: absolute;
+      left: 182px;
+      top: 172px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      width: 478px;
+    }
+
+    .hero-title {
+      font-size: 60px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .hero-sub {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 254px;
+      margin-top: 16px;
+    }
+
+    .btn-black {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      background: var(--black);
+      color: var(--white);
+      padding: 16px 50px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      width: 100%;
+      transition: background 0.45s;
+    }
+    .btn-black:hover { background: var(--color-primary, #487f70); }
+
+    .btn-white {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: var(--white);
+      color: var(--black);
+      padding: 16px 50px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      width: 100%;
+      transition: color 0.45s;
+    }
+    .btn-white:hover { color: var(--color-primary, #487f70); }
+
+    .btn-arrow { width: 50px; height: 12px; flex-shrink: 0; }
+
+    /* ticker band */
+    .ticker-band {
+      position: absolute;
+      bottom: -60px;
+      left: -70.56px;
+      width: calc(100% + 141px);
+      height: 162.8px;
+      overflow: hidden;
+      transform: rotate(-0.75deg);
+      transform-origin: left center;
+      z-index: 10;
+    }
+
+    .ticker-band img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ─────────────── MODEL SECTION ─────────────── */
+    .model-section {
+      position: relative;
+      z-index: 1;
+      padding: 100px 31px 60px;
+    }
+
+    .model-section-title {
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 18px;
+    }
+
+    .model-cards {
+      display: flex;
+      gap: 30px;
+    }
+
+    .model-card {
+      position: relative;
+      flex: 1;
+      height: 500px;
+      overflow: hidden;
+    }
+
+    .model-card-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .model-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0) 65%);
+    }
+
+    .model-card-content {
+      position: absolute;
+      inset: 0;
+      padding: 25px 29px 30px 31px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .model-card-text {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .model-card-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 50px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    .model-card-desc {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-light);
+      line-height: 1.3;
+    }
+
+    .btn-model {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--black);
+      color: var(--white);
+      padding: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      width: 100%;
+      font-family: 'Pretendard', sans-serif;
+      transition: background 0.45s;
+    }
+    .btn-model:hover { background: var(--color-primary, #487f70); }
+
+    /* ─────────────── INFO SECTION ─────────────── */
+    .info-section {
+      padding: 80px 0 100px;
+      text-align: center;
+    }
+
+    .info-title {
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--black);
+      line-height: 1.6;
+      margin-bottom: 6px;
+      text-transform: capitalize;
+    }
+
+    .info-list {
+      display: inline-block;
+      text-align: left;
+      color: var(--gray-mid);
+      font-size: 14px;
+      line-height: 1.6;
+      padding-left: 21px;
+    }
+
+    .mobile-scroll-indicator { display: none; }
+
+    /* ══════════════════════ NAV: 1024px 이상에서는 페이지와 같은 비율로 축소 동기화 ══════════════════════ */
+    @media (min-width: 1024px) {
+      body nav.__jeep-nav {
+        left: 50% !important;
+        transform: translateX(-50%) scale(var(--page-scale, 1)) !important;
+        transform-origin: top center !important;
+      }
+    }
+
+    /* ══════════════════════ TABLET + MOBILE (1024px 미만): 비율 축소 대신 일반 흐름 레이아웃 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; }
+      .scale-outer { width: 100%; height: auto !important; overflow: visible; }
+      .page { position: static; width: 100%; height: auto; overflow: visible; transform: none !important; }
+
+      /* nav: 모바일+태블릿 nav 스타일은 components/header.js 컴포넌트 안으로 합쳐짐 */
+    }
+
+    /* ══════════════════════ MOBILE (768px 이하) — 피그마 모바일뷰(node 4361:39054) 기준 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; overflow-x: hidden; }
+
+      /* ── HERO: 사진 영역과 텍스트 영역을 분리 (사진은 고정 높이, 텍스트는 흰 배경 위 일반 흐름) ── */
+      .hero { height: auto; margin-top: 56px; overflow: visible; }
+      /* overflow:hidden이면 아래 .hero-car-wrap(bottom:-8%)/.ticker-band(bottom:-30px)의
+         의도된 하단 돌출(차량이 다음 섹션 위로 튀어나오는 연출)까지 같이 잘려서 visible로 둔다.
+         배경 이미지 자체는 object-fit:cover가 박스 안에서 알아서 크롭하므로 부모의 overflow는
+         필요 없다 */
+      .hero-photo { position: relative; height: 62vw; min-height: 260px; max-height: 420px; overflow: visible; }
+      .hero-car-wrap {
+        position: absolute; left: 50%; top: auto; bottom: -8%;
+        width: 82%; height: auto;
+        transform: translateX(-50%);
+      }
+      .hero-car { width: 100%; height: auto; object-fit: contain; }
+      .ticker-band { height: 90px; bottom: -30px; }
+
+      .hero-content {
+        position: static; left: auto; top: auto; width: 100%;
+        padding: 24px 16px 0; gap: 16px;
+      }
+      .hero-text { width: 100%; gap: 8px; }
+      .hero-title { font-size: 28px; color: var(--black); }
+      .hero-sub { font-size: 14px; font-weight: 500; color: var(--gray-mid); }
+      .hero-buttons { width: 100%; margin-top: 8px; gap: 10px; }
+      .btn-black, .btn-white { padding: 16px; font-size: 14px; }
+      .btn-white { border: 1px solid var(--black); }
+      .btn-arrow { display: none; }
+
+      .mobile-scroll-indicator {
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+        padding: 20px 0 8px;
+      }
+      .mobile-scroll-indicator .scroll-label {
+        font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600;
+        color: var(--black); text-transform: uppercase; letter-spacing: 2px;
+      }
+      .mobile-scroll-indicator .material-symbols-outlined {
+        font-size: 32px; color: var(--black);
+        animation: scroll-bounce 1.6s ease-in-out infinite;
+      }
+      @keyframes scroll-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(8px); }
+      }
+
+      /* ── 시승 모델 안내 카드 ── */
+      .model-section { padding: 12px 0 0; }
+      .model-section-title { font-size: 18px; font-weight: 600; margin-bottom: 0; padding: 0 16px 16px; }
+      .model-cards { flex-direction: column; gap: 0; }
+      .model-card { flex: none; width: 100%; height: auto; aspect-ratio: 402 / 568; }
+      .model-card-content { padding: 24px 16px; }
+      .model-card-name { font-size: 34px; }
+      .model-card-desc { font-size: 14px; }
+      .btn-model { font-size: 13px; padding: 10px 16px; }
+
+      /* 피그마 모바일뷰엔 유의사항 섹션이 없음 */
+      .info-section { display: none; }
+    }
+
+  </style>
+</head>
+<body>
+
+<script src="components/header.js"></script>
+<script src="components/modal.js"></script>
+
+<div class="scale-outer">
+<div class="page">
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-photo">
+    <img class="hero-bg" src="images/test-drive-img/hero-bg.png" alt="" />
+
+    <div class="hero-car-wrap">
+      <img class="hero-car" src="images/test-drive-img/hero-car.png" alt="Jeep" />
+    </div>
+
+    <!-- ticker band -->
+    <div class="ticker-band">
+      <img src="images/test-drive-img/ticker.svg" alt="" />
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-title">Jeep 시승 예약하기</div>
+      <div class="hero-sub">
+        시승 신청 시 구매상담부터 받으실 수 있는 혜택까지<br>
+        자세히 안내해 드립니다.
+      </div>
+    </div>
+    <div class="hero-buttons">
+      <button class="btn-black" onclick="openComingSoon(event)">
+        시승 예약하기
+        <svg class="btn-arrow" viewBox="0 0 50 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 6H47M47 6L41 1M47 6L41 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-white" onclick="openComingSoon(event)">
+        예약 확인하기
+        <svg class="btn-arrow" viewBox="0 0 50 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 6H47M47 6L41 1M47 6L41 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-scroll-indicator" aria-hidden="true">
+    <span class="scroll-label">SCROLL</span>
+    <span class="material-symbols-outlined">expand_circle_down</span>
+  </div>
+</section>
+
+<!-- ═══════════ MODEL SECTION ═══════════ -->
+<section class="model-section">
+  <div class="model-section-title">시승 모델 안내</div>
+  <div class="model-cards">
+    <div class="model-card">
+      <img class="model-card-bg" src="images/test-drive-img/model-wrangler.png" alt="" />
+      <div class="model-card-overlay"></div>
+      <div class="model-card-content">
+        <div class="model-card-text">
+          <div class="model-card-name">WRANGLER</div>
+          <div class="model-card-desc">전설의 오프로드 아이콘<br>2.0 터보 · 4xe 하이브리드</div>
+        </div>
+        <button class="btn-model" onclick="openComingSoon(event)">시승 예약하기</button>
+      </div>
+    </div>
+    <div class="model-card">
+      <img class="model-card-bg" src="images/test-drive-img/model-gladiator.png" alt="" />
+      <div class="model-card-overlay"></div>
+      <div class="model-card-content">
+        <div class="model-card-text">
+          <div class="model-card-name">GLADIATOR</div>
+          <div class="model-card-desc">픽업의 실용성과 오프로드 성능<br>어디든 갈 수 있는 자유</div>
+        </div>
+        <button class="btn-model" onclick="openComingSoon(event)">시승 예약하기</button>
+      </div>
+    </div>
+    <div class="model-card">
+      <img class="model-card-bg" src="images/test-drive-img/model-grand-cherokee.png" alt="" />
+      <div class="model-card-overlay"></div>
+      <div class="model-card-content">
+        <div class="model-card-text">
+          <div class="model-card-name">GRAND CHEROKEE</div>
+          <div class="model-card-desc">프리미엄 SUV의 기준<br>온로드와 오프로드의 완벽한 균형</div>
+        </div>
+        <button class="btn-model" onclick="openComingSoon(event)">시승 예약하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ INFO SECTION ═══════════ -->
+<section class="info-section">
+  <div class="info-title">원하시는 jeep 차량을 선택하고 특별함을 직접 경험해보세요.</div>
+  <ul class="info-list">
+    <li>시승 체험은 자동차 보험 가입 기준에 따라 만 21세 이상부터 이용하실 수 있습니다.</li>
+    <li>전시 차량은 별도 예약 없이 자유롭게 관람하실 수 있습니다.</li>
+    <li>시승 차량은 전시관 운영 상황에 따라 변경될 수 있습니다.</li>
+  </ul>
+</section>
+
+<!-- ═══════════ FOOTER (공용 컴포넌트) ═══════════ -->
+<script src="components/footer.js"></script>
+
+</div>
+</div>
+
+<script>
+  (function () {
+    var DESIGN_WIDTH = 1920;
+    var TABLET_BREAKPOINT = 1024;
+    var page = document.querySelector('.page');
+    var outer = document.querySelector('.scale-outer');
+    function update() {
+      if (window.innerWidth < TABLET_BREAKPOINT) {
+        document.documentElement.style.setProperty('--page-scale', 1);
+        page.style.transform = '';
+        outer.style.height = '';
+        return;
+      }
+      var scale = Math.min(1, window.innerWidth / DESIGN_WIDTH);
+      document.documentElement.style.setProperty('--page-scale', scale);
+      page.style.transform = 'translateX(-50%) scale(' + scale + ')';
+      outer.style.height = (page.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
+
+</body>
+</html>

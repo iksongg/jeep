@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeep® | 결제하기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="design-system/tokens.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root { --page-scale: 1; }
+
+    html, body {
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+      background: white;
+    }
+
+    /* 1920 기준 데스크톱 레이아웃을 1024px까지는 그대로 비율 축소 */
+    .scale-outer {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: white;
+    }
+    .page {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 1920px;
+      transform: translateX(-50%) scale(var(--page-scale));
+      transform-origin: top center;
+      background: white;
+    }
+
+    /* ══════════════════════ NAV: 1024px 이상에서는 페이지와 같은 비율로 축소 동기화 ══════════════════════ */
+    @media (min-width: 1024px) {
+      body nav.__jeep-nav {
+        left: 50% !important;
+        transform: translateX(-50%) scale(var(--page-scale, 1)) !important;
+        transform-origin: top center !important;
+      }
+    }
+
+    /* ══════════════════════ TABLET + MOBILE (1024px 미만): 비율 축소 대신 일반 흐름 레이아웃 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; }
+      .scale-outer { width: 100%; height: auto !important; overflow: visible; }
+      .page { position: static; width: 100%; height: auto; overflow: visible; transform: none !important; }
+
+      /* nav: 모바일+태블릿 nav 스타일은 components/header.js 컴포넌트 안으로 합쳐짐 */
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 561px;
+      margin-top: 80px;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      left: -1.1%; top: -4.48%;
+      width: 127.76%; height: 127.53%;
+      object-fit: cover;
+    }
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,1) 12.5%, rgba(102,102,102,0) 70%);
+    }
+    /* 엘립스 장식 */
+    .hero-ellipse {
+      position: absolute;
+      left: 808px; top: 240px;
+      width: 534px; height: 224px;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .hero-ellipse img {
+      width: 518px; height: 136px;
+      transform: rotate(-9.94deg);
+      opacity: 0.85;
+    }
+    /* 차량 이미지 */
+    .hero-car {
+      position: absolute;
+      left: 988px; top: 106px;
+      width: 645px; height: 428px;
+      overflow: hidden;
+    }
+    .hero-car img {
+      position: absolute;
+      left: -2.45%; top: 0;
+      width: 103.76%; height: 100%;
+      object-fit: cover;
+    }
+    /* 히어로 텍스트 */
+    .hero-content {
+      position: absolute;
+      left: 270px; top: 89px;
+    }
+    .hero-model-row {
+      display: flex; align-items: flex-end; gap: 15px;
+      margin-bottom: 13px;
+    }
+    .hero-model-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 40px; font-weight: 700;
+      color: white; text-transform: uppercase; line-height: 1.3;
+    }
+    .hero-model-year {
+      font-size: 18px; font-weight: 400;
+      color: white; line-height: 1.6; padding-bottom: 4px;
+    }
+    .hero-model-options {
+      font-size: 14px; font-weight: 400;
+      color: white; line-height: 1.6;
+      max-width: 426px;
+    }
+    /* 가격 */
+    .hero-price-section {
+      position: absolute;
+      left: 270px; top: 273px;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .hero-price-label {
+      font-size: 14px; font-weight: 400;
+      color: var(--color-primary, #487f70); line-height: 1.3; text-transform: uppercase;
+    }
+    .hero-price-amount {
+      font-size: 40px; font-weight: 700;
+      color: white; line-height: 1.3;
+    }
+    /* 견적 수정 버튼 */
+    .hero-btn-area {
+      position: absolute;
+      left: 270px; top: 368px;
+      width: 420px;
+    }
+    .hero-btn-estimate {
+      width: 100%; height: 48px;
+      border: 1px solid white; background: transparent;
+      color: white; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.45s, border-color 0.45s;
+    }
+    .hero-btn-estimate:hover { color: var(--color-primary, #487f70); border-color: var(--color-primary, #487f70); }
+    /* 유의사항 */
+    .hero-disclaimer {
+      position: absolute;
+      left: 270px; top: 433px;
+      font-size: 12px; color: #c1c1c1; line-height: 1.6;
+    }
+    .hero-disclaimer ul { padding-left: 18px; list-style: disc; }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      display: flex;
+      gap: 100px;
+      padding: 50px 0 80px 270px;
+    }
+
+    /* ── 견적서 컬럼 ── */
+    .quote-col { width: 900px; flex-shrink: 0; }
+
+    .quote-heading {
+      font-size: 30px; font-weight: 600; color: black;
+      line-height: 1.3; padding-bottom: 24px;
+    }
+    .quote-sections { display: flex; flex-direction: column; gap: 30px; }
+    .quote-section-header {
+      font-size: 20px; font-weight: 600; color: black;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #424242;
+    }
+    .quote-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #c1c1c1;
+    }
+    .quote-item:last-child { border-bottom: none; }
+    .quote-item-left { display: flex; align-items: center; gap: 20px; }
+    .quote-color-swatch { width: 50px; height: 50px; background: black; flex-shrink: 0; }
+    .quote-item-img { width: 77px; height: 50px; object-fit: cover; flex-shrink: 0; }
+    .quote-item-name { font-size: 16px; font-weight: 700; color: black; line-height: 1.3; white-space: nowrap; }
+    .quote-item-right { display: flex; align-items: center; gap: 30px; }
+    .quote-item-price { font-size: 16px; font-weight: 400; color: black; line-height: 1.3; white-space: nowrap; text-align: right; }
+    .quote-item-price.sm { font-size: 14px; }
+    .quote-item-change { display: flex; align-items: center; }
+    .quote-item-change-text {
+      font-family: inherit;
+      font-size: 14px; font-weight: 600; color: black; white-space: nowrap;
+      background: none; border: none; padding: 0; cursor: pointer;
+      transition: color 0.45s;
+    }
+    .quote-item-change-text:hover { color: var(--color-primary, #487f70); }
+    .quote-item-change .material-symbols-outlined {
+      font-size: 24px;
+      transform: rotate(90deg);
+    }
+
+    /* ── 사이드 패널 ── */
+    .side-col {
+      width: 380px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 39px;
+    }
+
+    /* 본인인증 */
+    .side-section-title { font-size: 18px; font-weight: 600; color: black; line-height: 1.3; margin-bottom: 24px; }
+    .auth-icons { display: flex; align-items: flex-start; justify-content: space-between; }
+    .auth-icon-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .auth-icon-label { font-size: 12px; font-weight: 400; color: black; line-height: 1.3; white-space: nowrap; }
+    .auth-icon-img { width: 60px; height: 60px; object-fit: contain; }
+    .auth-naver {
+      width: 60px; height: 60px;
+      background: #00c300;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .auth-naver img { width: 27px; height: 27px; object-fit: contain; }
+    .auth-toss {
+      width: 60px; height: 60px;
+      border: 1px solid #c1c1c1; background: white;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .auth-toss img { width: 50px; height: 40px; object-fit: contain; }
+
+    /* 전시장 위치 */
+    .dealer-info-box {
+      background: #fbfbfb;
+      padding: 20px;
+    }
+    .dealer-info-name {
+      font-size: 18px; font-weight: 600; color: black;
+      line-height: 1.3; margin-bottom: 11px;
+    }
+    .dealer-info-list { list-style: disc; padding-left: 21px; }
+    .dealer-info-list li { font-size: 14px; color: #5b5b5b; line-height: 1.6; }
+
+    /* 개인정보 동의 + 버튼 */
+    .privacy-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 19px; cursor: pointer;
+    }
+    .privacy-left { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .privacy-circle {
+      appearance: none; -webkit-appearance: none;
+      width: 20px; height: 20px; border-radius: 50%; border: 1px solid #c1c1c1;
+      margin: 0; flex-shrink: 0; cursor: pointer;
+      position: relative;
+      transition: background-color 0.45s, border-color 0.45s;
+    }
+    .privacy-circle:checked { background: black; border-color: black; }
+    .privacy-circle:checked::after {
+      content: '';
+      position: absolute; left: 50%; top: 50%;
+      width: 10px; height: 6px;
+      border-left: 2px solid white; border-bottom: 2px solid white;
+      transform: translate(-50%, -60%) rotate(-45deg);
+    }
+    .privacy-text { font-size: 16px; font-weight: 500; color: black; line-height: 1.3; }
+    .privacy-arrow { font-size: 24px; cursor: pointer; }
+    .btn-email {
+      width: 100%; height: 48px;
+      border: 1px solid black; background: white;
+      font-size: 14px; font-weight: 600; color: black;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+      transition: color 0.45s, border-color 0.45s;
+    }
+    .btn-buy {
+      width: 100%; height: 48px;
+      background: black; border: none;
+      font-size: 14px; font-weight: 600; color: white;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.45s;
+    }
+    .btn-email:hover { color: var(--color-primary, #487f70); border-color: var(--color-primary, #487f70); }
+    .btn-buy:hover { background: var(--color-primary, #487f70); }
+
+    /* 유의사항 */
+    .disclaimers { list-style: disc; padding-left: 18px; }
+    .disclaimers li { font-size: 12px; color: #757575; line-height: 1.6; margin-bottom: 2px; }
+    .disclaimers li:last-child { margin-bottom: 0; }
+
+    /* ── 옵션 변경 바텀시트 ── */
+    .option-sheet-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 3000;
+      align-items: flex-end;
+    }
+    .option-sheet-overlay.active { display: flex; }
+    .option-sheet {
+      width: 100%; max-width: 1920px; margin: 0 auto;
+      max-height: 78vh; overflow-y: auto;
+      background: white;
+      padding: 40px 270px 50px;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
+      transform: translateY(100%);
+      transition: transform 0.6s ease;
+    }
+    .option-sheet-overlay.active .option-sheet { transform: translateY(0); }
+    .option-sheet-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 20px; margin-bottom: 20px;
+      border-bottom: 2px solid #424242;
+    }
+    .option-sheet-title { font-size: 24px; font-weight: 700; color: black; line-height: 1.3; }
+    .option-sheet-close {
+      background: none; border: none; cursor: pointer; color: black;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .option-sheet-body { display: flex; flex-direction: column; gap: 20px; }
+
+    /* 색상/휠 스와치형: 항상 4열 그리드 */
+    .osheet-swatch-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .osheet-swatch-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+    .osheet-swatch-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .osheet-swatch {
+      width: 60px; height: 60px; border: 1px solid #dbdbdb;
+      display: block; object-fit: cover;
+    }
+    .osheet-swatch-input:checked ~ .osheet-swatch { outline: 2px solid black; outline-offset: 2px; }
+    .osheet-swatch-label { font-size: 13px; font-weight: 400; color: black; text-align: center; max-width: 100%; line-height: 1.3; }
+
+    /* 액세서리 리스트형 */
+    .osheet-item-list { display: flex; flex-direction: column; }
+    .osheet-item {
+      display: flex; align-items: center; gap: 20px;
+      padding: 14px 4px; border-bottom: 1px solid #dbdbdb; cursor: pointer;
+    }
+    .osheet-item:last-child { border-bottom: none; }
+    .osheet-item-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .osheet-item-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+    .osheet-item-img { width: 60px; height: 44px; object-fit: cover; flex-shrink: 0; background: #f4f4f4; }
+    .osheet-item-name { font-size: 15px; font-weight: 600; color: black; }
+    .osheet-item-price { font-size: 14px; font-weight: 400; color: #5b5b5b; margin-top: 2px; }
+    .osheet-radio-dot {
+      width: 22px; height: 22px; border-radius: 50%; border: 1px solid #757575;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .osheet-radio-dot::after {
+      content: ''; width: 10px; height: 10px; border-radius: 50%; background: white; opacity: 0;
+    }
+    .osheet-item-input:checked ~ .osheet-radio-dot { background: black; border-color: black; }
+    .osheet-item-input:checked ~ .osheet-radio-dot::after { opacity: 1; }
+
+    .option-sheet-apply {
+      width: 100%; height: 52px; margin-top: 30px;
+      background: black; color: white; border: none;
+      font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+      transition: background 0.45s;
+    }
+    .option-sheet-apply:hover { background: var(--color-primary, #487f70); }
+
+    /* ─── 하단 고정 견적 바 (모바일 전용) — quote.html의 .quote-sticky-bar와 동일한 구조/스타일을
+       재사용. 데스크톱은 side-col의 기존 CTA를 그대로 쓰므로 여기서는 항상 숨김 ─── */
+    .checkout-sticky-bar { display: none; }
+
+    /* ══════════════════════ MOBILE (1024px 미만) — 이 페이지는 피그마 모바일뷰가 없어서,
+       프로젝트의 다른 모바일뷰(test-drive.html/quote.html/order-complete.html)에서 이미
+       확인된 기준(margin-top:56px GNB 여백, 좌우 16px 콘텐츠 패딩, "사진 블록 → 흰 배경
+       텍스트 블록" 순서의 히어로 구조, 옵션 리스트 1열)을 그대로 적용해 재구성함 ══════════════════════ */
+    @media (max-width: 1023.98px) {
+      html, body { min-width: 0; overflow-x: hidden; }
+
+      /* 페이지 맨 끝(모바일 Footer 바로 아래)에 고정 견적 바 높이만큼 여백을 둬서
+         Footer의 마지막 줄이 고정 바에 가리지 않게 함 */
+      .page { padding-bottom: 49px; }
+
+      /* ── HERO: "사진 → 텍스트" 순서로 분리(test-drive.html과 동일한 패턴).
+         사진 블록(.hero-photo)은 고정 비율로 차량이 크게 보이게, 텍스트는 그 아래
+         흰 배경 위에 일반 흐름으로 배치(기존 오버레이 방식 폐기) ── */
+      .hero { height: auto; margin-top: 56px; overflow: visible; }
+      /* 배경 사진(127% 오버사이즈)은 별도 래퍼(.hero-bg-wrap)에서만 클리핑하고,
+         .hero-photo 자체는 overflow:visible로 열어서 차량 컷아웃이 사진 하단 아래
+         흰 배경 위로 자연스럽게 튀어나오도록 함(기존엔 여기서 같이 잘리고 있었음) */
+      .hero-photo { position: relative; height: 78vw; min-height: 300px; max-height: 460px; overflow: visible; }
+      .hero-bg-wrap { position: absolute; inset: 0; overflow: hidden; }
+      .hero-gradient { display: none; }
+      .hero-ellipse {
+        left: 50%; top: 12%; bottom: auto; width: 82%; height: auto;
+        aspect-ratio: 534 / 224; transform: translateX(-50%);
+      }
+      .hero-ellipse img { width: 100%; height: auto; max-width: none; }
+      /* 차량 박스를 사진 높이보다 크게 잡고 살짝 아래로 내려서(하단 바퀴/그림자가
+         사진 경계 아래 흰 영역 위로 걸치도록) 튀어나오는 느낌을 만듦.
+         object-fit도 cover(크롭)에서 contain(원본 컷아웃 그대로)으로 바꿔 잘림 방지 */
+      .hero-car { left: 50%; top: 2%; width: 90%; height: 108%; transform: translateX(-50%); overflow: visible; }
+      .hero-car img { position: static; width: 100%; height: 100%; object-fit: contain; }
+
+      .hero-content {
+        position: static; left: auto; top: auto; width: 100%;
+        padding: 24px 16px 0;
+      }
+      .hero-model-name, .hero-model-year, .hero-model-options { color: black; }
+      .hero-model-name { font-size: 28px; }
+      .hero-model-year { font-size: 14px; }
+      .hero-model-options { font-size: 13px; max-width: none; margin-top: 4px; }
+
+      .hero-price-section { position: static; left: auto; top: auto; width: 100%; padding: 20px 16px 0; }
+      .hero-price-amount { color: black; font-size: 28px; }
+
+      .hero-btn-area { position: static; left: auto; top: auto; width: 100%; padding: 20px 16px 0; }
+      .hero-btn-estimate { border-color: black; color: black; height: 52px; }
+
+      .hero-disclaimer { position: static; left: auto; top: auto; width: 100%; padding: 16px 16px 24px; color: #757575; }
+
+      /* ── MAIN: 2단(견적서+사이드) → 1열 스택, 좌측 270px 고정 패딩 해제.
+         하단 padding은 아래 고정 견적 바(48px)에 콘텐츠가 가리지 않도록 quote.html의
+         .quote-panel과 동일한 기준(110px)으로 확보 ── */
+      .content { flex-direction: column; gap: 40px; padding: 32px 16px 110px; }
+      .quote-col { width: 100%; }
+      .quote-heading { font-size: 22px; padding-bottom: 16px; }
+      .quote-sections { gap: 24px; }
+      .quote-section-header { font-size: 17px; padding-bottom: 12px; }
+      .quote-item { padding: 12px 0; }
+      .quote-item-left { gap: 12px; min-width: 0; flex: 1; }
+      .quote-color-swatch, .quote-item-img { width: 44px; height: 44px; flex-shrink: 0; }
+      .quote-item-name { font-size: 14px; white-space: normal; }
+      .quote-item-right { gap: 12px; flex-shrink: 0; }
+      .quote-item-price { font-size: 14px; }
+
+      .side-col { width: 100%; gap: 32px; }
+
+      /* ── 옵션 변경 바텀시트: 270px 좌우 패딩 → 모바일 여백 ── */
+      .option-sheet { padding: 24px 16px 32px; max-height: 82vh; }
+      .option-sheet-title { font-size: 20px; }
+      .osheet-swatch-row { gap: 8px; }
+      .osheet-swatch-wrap { width: 100%; justify-self: center; }
+      .osheet-swatch { width: 52px; height: 52px; }
+      .osheet-swatch-label { font-size: 11px; }
+
+      /* ── 하단 고정 견적 바: quote.html 모바일 뷰의 가격/버튼 규격(48px, 20px, 10px 59px)을 그대로 사용 ── */
+      .checkout-sticky-bar {
+        display: flex; align-items: stretch;
+        position: fixed; left: 0; bottom: 0; width: 100%;
+        border-top: 1px solid #c1c1c1;
+        background: white;
+        z-index: 500;
+      }
+      .checkout-sticky-info {
+        flex: 1; display: flex; align-items: center;
+        padding: 0 20px; height: 48px;
+      }
+      .checkout-sticky-price { font-size: 20px; font-weight: 700; color: black; }
+      .checkout-sticky-btn {
+        flex-shrink: 0;
+        background: black; color: white; border: none; cursor: pointer;
+        font-family: 'Pretendard', sans-serif; font-size: 14px; font-weight: 700;
+        padding: 10px 59px;
+        transition: background 0.45s;
+      }
+      .checkout-sticky-btn:hover { background: var(--color-primary, #487f70); }
+    }
+
+  </style>
+</head>
+<body>
+
+<script src="components/header.js"></script>
+<script src="components/modal.js"></script>
+
+<div class="scale-outer">
+<div class="page">
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <!-- 사진 영역(배경+조명+차량)을 한 블록으로 묶음 — 데스크톱은 기존과 동일(이 래퍼 자체엔
+       position 값을 주지 않아 자식들의 절대좌표는 그대로 .hero 기준으로 동작함),
+       모바일에서만 이 블록에 고정 높이를 줘서 "사진 → 텍스트" 세로 구조로 재구성 ── -->
+  <div class="hero-photo">
+    <div class="hero-bg-wrap">
+      <img class="hero-bg" src="images/checkout-img/hero-bg.png" alt="" />
+      <div class="hero-gradient"></div>
+    </div>
+
+    <!-- 엘립스 조명 장식 -->
+    <div class="hero-ellipse">
+      <img src="images/checkout-img/ellipse.svg" alt="" />
+    </div>
+
+    <!-- 차량 이미지 -->
+    <div class="hero-car">
+      <img src="images/checkout-img/hero-car.png" alt="Jeep Wrangler Rubicon" />
+    </div>
+  </div>
+
+  <!-- 모델명 + 옵션 텍스트 -->
+  <div class="hero-content">
+    <div class="hero-model-row">
+      <span class="hero-model-name">WRANGLER</span>
+      <span class="hero-model-year">2026년식</span>
+    </div>
+    <div class="hero-model-options">
+      블랙 / 18인치 머신드 페인티드 발틱 그레이 휠 / 프리미엄 소프트탑 검정 (JK전용) / 도어실가드 - 스틸 /<br />
+      퍼포먼스 락레일 / 스페어타이어커버 / 주차커버 / 부착용 수납가방세트 / 지프로고 토트백
+    </div>
+  </div>
+
+  <!-- 견적 금액 -->
+  <div class="hero-price-section">
+    <div class="hero-price-label">예상 견적 금액 (개별 소비세 3.5% 기준)</div>
+    <div class="hero-price-amount">84,670,000원</div>
+  </div>
+
+  <!-- 견적 수정 버튼 -->
+  <div class="hero-btn-area">
+    <button class="hero-btn-estimate" onclick="location.href='quote.html'">견적 수정하기</button>
+  </div>
+
+  <!-- 유의 문구 -->
+  <div class="hero-disclaimer">
+    <ul>
+      <li>웹사이트 내 차량 및 옵션 관련 이미지는 실제 차량과 다를 수 있으므로<br />전시장 방문 및 실차 확인을 권장드립니다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="content">
+
+  <!-- ── 견적서 컬럼 ── -->
+  <div class="quote-col">
+    <div class="quote-heading">견적서</div>
+    <div class="quote-sections">
+
+      <!-- 익스테리어 색상 및 휠 -->
+      <div class="quote-section">
+        <div class="quote-section-header">익스테리어 색상 및 휠</div>
+        <div class="quote-item" id="qitem-color">
+          <div class="quote-item-left">
+            <div class="quote-color-swatch"></div>
+            <span class="quote-item-name">블랙</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price sm">0원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('color')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+        <div class="quote-item" id="qitem-wheel">
+          <div class="quote-item-left">
+            <div class="quote-color-swatch" style="background: url('images/quote-img/wheel-4.png') center / cover;"></div>
+            <span class="quote-item-name">18인치 머신드 페인티드 발틱 그레이 휠</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price sm">0원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('wheel')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 액세사리 - 내부 -->
+      <div class="quote-section">
+        <div class="quote-section-header">액세사리 - 내부</div>
+
+        <div class="quote-item" id="qitem-carpet-mat">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/quote-img/프리미엄 소프트탑 검정 (JK전용).jpg" alt="" />
+            <span class="quote-item-name">프리미엄 소프트탑 검정 (JK전용)</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">94,900원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('carpet-mat')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-item" id="qitem-allweather-mat">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/quote-img/도어실가드 - 스틸.jpg" alt="" />
+            <span class="quote-item-name">도어실가드 - 스틸</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">233,000원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('allweather-mat')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-item" id="qitem-performance-rail">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/checkout-img/item-performance-rail.png" alt="" />
+            <span class="quote-item-name">퍼포먼스 락레일</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">1,950,000원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('performance-rail')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-item" id="qitem-tire-cover">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/checkout-img/item-tirecover-palm.png" alt="" />
+            <span class="quote-item-name">스페어타이어커버 (야자수와 세븐그릴)</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">141,900원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('tire-cover')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-item" id="qitem-car-cover">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/checkout-img/item-car-cover.png" alt="" />
+            <span class="quote-item-name">주차커버</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">318,500원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('car-cover')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-item" id="qitem-bag-set">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/checkout-img/item-bag-set.png" alt="" />
+            <span class="quote-item-name">부착용 수납가방세트</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">194,700원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('bag-set')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-item" id="qitem-tote-bag">
+          <div class="quote-item-left">
+            <img class="quote-item-img" src="images/checkout-img/item-tote-bag.png" alt="" />
+            <span class="quote-item-name">지프로고 토트백</span>
+          </div>
+          <div class="quote-item-right">
+            <span class="quote-item-price">37,700원</span>
+            <div class="quote-item-change">
+              <button type="button" class="quote-item-change-text" onclick="openOptionSheet('tote-bag')">변경</button>
+              <span class="material-symbols-outlined">keyboard_arrow_up</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 사이드 패널 ── -->
+  <div class="side-col">
+
+    <!-- 본인인증 -->
+    <div>
+      <div class="side-section-title">본인인증을 진행해 주세요.</div>
+      <div class="auth-icons">
+        <div class="auth-icon-item">
+          <img class="auth-icon-img" src="images/checkout-img/auth-kakaotalk.svg" alt="카카오톡" />
+          <span class="auth-icon-label">카카오톡</span>
+        </div>
+        <div class="auth-icon-item">
+          <div class="auth-naver">
+            <img src="images/checkout-img/auth-naver-vector.svg" alt="네이버" />
+          </div>
+          <span class="auth-icon-label">네이버</span>
+        </div>
+        <div class="auth-icon-item">
+          <img class="auth-icon-img" src="images/checkout-img/auth-kakaobank.svg" alt="카카오뱅크" />
+          <span class="auth-icon-label">카카오뱅크</span>
+        </div>
+        <div class="auth-icon-item">
+          <div class="auth-toss">
+            <img src="images/checkout-img/auth-toss.png" alt="토스" />
+          </div>
+          <span class="auth-icon-label">토스</span>
+        </div>
+        <div class="auth-icon-item">
+          <img class="auth-icon-img" src="images/checkout-img/auth-pass.svg" alt="PASS" />
+          <span class="auth-icon-label">PASS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전시장 위치 -->
+    <div class="dealer-info-box">
+      <div class="dealer-info-name">Jeep 서초 전시장 KCC 모빌리티</div>
+      <ul class="dealer-info-list">
+        <li>서울특별시 서초구 남부순환로 2219</li>
+        <li>전화번호: 02-525-0040</li>
+        <li>팩스: 02-525-9843</li>
+        <li>평일 : 09:00 ~ 20:00</li>
+        <li>주말 : 10:00 ~ 20:00 (공휴일 포함)</li>
+      </ul>
+    </div>
+
+    <!-- 개인정보 동의 + 버튼 -->
+    <div>
+      <div class="privacy-row">
+        <label class="privacy-left" for="privacyAgreeCheck">
+          <input type="checkbox" class="privacy-circle" id="privacyAgreeCheck" />
+          <span class="privacy-text">개인정보 활용 동의</span>
+        </label>
+        <span class="privacy-arrow material-symbols-outlined" onclick="openComingSoon(event)">keyboard_arrow_right</span>
+      </div>
+      <div>
+        <button class="btn-email" onclick="openComingSoon(event, '이메일을 보냈습니다')">이메일 보내기</button>
+        <button class="btn-buy" onclick="location.href='order-complete.html'">온라인 구매하기</button>
+      </div>
+    </div>
+
+    <!-- 유의사항 -->
+    <ul class="disclaimers">
+      <li>상기 견적 금액은 개별 소비세 3.5% 적용 견적입니다 (단, 차종 및 면세구분에 따라 세제 혜택이 적용됩니다.)</li>
+      <li>상기 이미지는 실제 차량과 사양 및 컬러가 다를 수 있으므로 전시장 방문 및 실차 확인을 권장합니다.</li>
+      <li>일부 이미지는 대표 등급 기준으로 연출되었으며 추후 사전예고 없이 변경이나 업데이트가 될 수 있습니다.</li>
+      <li>본 견적서는 고객님의 차량 구입(청약) 의사결정에 도움을 드리고자 작성된 것으로, 법적인 효력이 없으며, 자세한 문의는 지점 · 대리점을 통해 확인바랍니다.</li>
+      <li>실계약 진행 시 차량 매매 관련 대금(계약금 포함)은 반드시 '고객전용 입금계좌' 혹은 '현대자동차(주) 명의 계좌'로 입금하여 주시기 바라며, 이외의 계좌로 송금하는 것은 자동차 매매 대금을 지급한 것으로 인정되지 않으니 유의하시기 바랍니다.</li>
+    </ul>
+
+  </div>
+</div>
+
+<!-- ══ FOOTER (공용 컴포넌트) ══ -->
+<script src="components/footer.js"></script>
+
+</div>
+</div>
+
+<!-- ═══ 하단 고정 견적 바 (모바일 전용, 뷰포트 기준 고정이라 스케일 래퍼 밖에 위치) ═══ -->
+<div class="checkout-sticky-bar">
+  <div class="checkout-sticky-info">
+    <span class="checkout-sticky-price">84,670,000원</span>
+  </div>
+  <button type="button" class="checkout-sticky-btn" onclick="location.href='order-complete.html'">구매 신청</button>
+</div>
+
+<!-- ══ 옵션 변경 바텀시트 (뷰포트 기준 고정이라 스케일 래퍼 밖에 위치) ══ -->
+<div class="option-sheet-overlay" id="optionSheetOverlay" onclick="closeOptionSheet(event)">
+  <div class="option-sheet" onclick="event.stopPropagation()">
+    <div class="option-sheet-header">
+      <span class="option-sheet-title" id="optionSheetTitle">옵션 변경</span>
+      <button type="button" class="option-sheet-close" aria-label="닫기" onclick="closeOptionSheet()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="option-sheet-body" id="optionSheetBody"></div>
+    <button type="button" class="option-sheet-apply" onclick="applyOptionSheet()">적용하기</button>
+  </div>
+</div>
+
+<script>
+  var OPTION_DATA = {
+    color: {
+      title: '익스테리어 색상 변경',
+      type: 'swatch',
+      options: [
+        { label: '화이트', swatchColor: '#fbfbfb', border: true },
+        { label: '블랙', swatchColor: '#282828', selected: true },
+        { label: '레드', swatchColor: 'red' },
+        { label: '옐로우', swatchColor: '#fc0' }
+      ]
+    },
+    wheel: {
+      title: '휠 변경',
+      type: 'swatch',
+      options: [
+        { label: '17인치 머신드 페인티드 블랙 휠', img: 'images/quote-img/wheel-1.png' },
+        { label: '18인치 알루미늄 휠', img: 'images/quote-img/wheel-2.png' },
+        { label: '17인치 알루미늄 휠', img: 'images/quote-img/wheel-3.png' },
+        { label: '18인치 머신드 페인티드 발틱 그레이 휠', img: 'images/quote-img/wheel-4.png', selected: true }
+      ]
+    },
+    'carpet-mat': {
+      title: '카펫 바닥 매트 변경',
+      type: 'list',
+      options: [
+        { label: '프리미엄 소프트탑 검정 (JK전용)', price: 94900, img: 'images/quote-img/프리미엄 소프트탑 검정 (JK전용).jpg', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    },
+    'allweather-mat': {
+      title: '올웨더 바닥 매트 변경',
+      type: 'list',
+      options: [
+        { label: '도어실가드 - 스틸', price: 233000, img: 'images/quote-img/도어실가드 - 스틸.jpg', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    },
+    'performance-rail': {
+      title: '퍼포먼스 락레일 변경',
+      type: 'list',
+      options: [
+        { label: '퍼포먼스 락레일', price: 1950000, img: 'images/checkout-img/item-performance-rail.png', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    },
+    'tire-cover': {
+      title: '스페어타이어커버 변경',
+      type: 'list',
+      options: [
+        { label: '스페어타이어커버 (야자수와 세븐그릴)', price: 141900, img: 'images/checkout-img/item-tirecover-palm.png', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    },
+    'car-cover': {
+      title: '주차커버 변경',
+      type: 'list',
+      options: [
+        { label: '주차커버', price: 318500, img: 'images/checkout-img/item-car-cover.png', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    },
+    'bag-set': {
+      title: '부착용 수납가방세트 변경',
+      type: 'list',
+      options: [
+        { label: '부착용 수납가방세트', price: 194700, img: 'images/checkout-img/item-bag-set.png', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    },
+    'tote-bag': {
+      title: '지프로고 토트백 변경',
+      type: 'list',
+      options: [
+        { label: '지프로고 토트백', price: 37700, img: 'images/checkout-img/item-tote-bag.png', selected: true },
+        { label: '선택 안함', price: 0, img: null }
+      ]
+    }
+  };
+
+  var currentOptionKey = null;
+
+  function formatWon(n) {
+    return n.toLocaleString('ko-KR') + '원';
+  }
+
+  function openOptionSheet(key) {
+    var data = OPTION_DATA[key];
+    if (!data) return;
+    currentOptionKey = key;
+    document.getElementById('optionSheetTitle').textContent = data.title;
+    var body = document.getElementById('optionSheetBody');
+    body.innerHTML = '';
+
+    if (data.type === 'swatch') {
+      var row = document.createElement('div');
+      row.className = 'osheet-swatch-row';
+      data.options.forEach(function (opt, i) {
+        var wrap = document.createElement('label');
+        wrap.className = 'osheet-swatch-wrap';
+        var input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'osheet-' + key;
+        input.className = 'osheet-swatch-input';
+        input.checked = !!opt.selected;
+        input.dataset.index = i;
+        var swatch;
+        if (opt.img) {
+          swatch = document.createElement('img');
+          swatch.src = opt.img;
+          swatch.className = 'osheet-swatch';
+        } else {
+          swatch = document.createElement('span');
+          swatch.className = 'osheet-swatch';
+          swatch.style.background = opt.swatchColor;
+          if (opt.border) swatch.style.border = '1px solid #c1c1c1';
+        }
+        var label = document.createElement('span');
+        label.className = 'osheet-swatch-label';
+        label.textContent = opt.label;
+        wrap.appendChild(input);
+        wrap.appendChild(swatch);
+        wrap.appendChild(label);
+        row.appendChild(wrap);
+      });
+      body.appendChild(row);
+    } else {
+      var list = document.createElement('div');
+      list.className = 'osheet-item-list';
+      data.options.forEach(function (opt, i) {
+        var item = document.createElement('label');
+        item.className = 'osheet-item';
+        var input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'osheet-' + key;
+        input.className = 'osheet-item-input';
+        input.checked = !!opt.selected;
+        input.dataset.index = i;
+        var left = document.createElement('div');
+        left.className = 'osheet-item-left';
+        var img = document.createElement('img');
+        img.className = 'osheet-item-img';
+        img.src = opt.img || 'images/checkout-img/item-cargo-tray.png';
+        img.style.visibility = opt.img ? 'visible' : 'hidden';
+        var info = document.createElement('div');
+        var name = document.createElement('p');
+        name.className = 'osheet-item-name';
+        name.textContent = opt.label;
+        var price = document.createElement('p');
+        price.className = 'osheet-item-price';
+        price.textContent = formatWon(opt.price);
+        info.appendChild(name);
+        info.appendChild(price);
+        left.appendChild(img);
+        left.appendChild(info);
+        var dot = document.createElement('span');
+        dot.className = 'osheet-radio-dot';
+        item.appendChild(input);
+        item.appendChild(left);
+        item.appendChild(dot);
+        list.appendChild(item);
+      });
+      body.appendChild(list);
+    }
+
+    document.getElementById('optionSheetOverlay').classList.add('active');
+  }
+
+  function closeOptionSheet() {
+    document.getElementById('optionSheetOverlay').classList.remove('active');
+  }
+
+  function applyOptionSheet() {
+    if (!currentOptionKey) return;
+    var data = OPTION_DATA[currentOptionKey];
+    var checked = document.querySelector('input[name="osheet-' + currentOptionKey + '"]:checked');
+    if (!checked) { closeOptionSheet(); return; }
+    var idx = Number(checked.dataset.index);
+    var opt = data.options[idx];
+    var row = document.getElementById('qitem-' + currentOptionKey);
+    if (row) {
+      var nameEl = row.querySelector('.quote-item-name');
+      if (nameEl) nameEl.textContent = opt.label;
+      if (data.type === 'swatch') {
+        var swatchEl = row.querySelector('.quote-color-swatch');
+        if (swatchEl) {
+          swatchEl.style.background = opt.img
+            ? 'url(' + opt.img + ') center / cover'
+            : opt.swatchColor;
+        }
+      } else {
+        var imgEl = row.querySelector('.quote-item-img');
+        var priceEl = row.querySelector('.quote-item-price');
+        if (imgEl) imgEl.style.visibility = opt.img ? 'visible' : 'hidden';
+        if (opt.img) imgEl.src = opt.img;
+        if (priceEl) priceEl.textContent = formatWon(opt.price);
+      }
+    }
+    data.options.forEach(function (o, i) { o.selected = (i === idx); });
+    closeOptionSheet();
+  }
+</script>
+
+<script>
+  (function () {
+    var DESIGN_WIDTH = 1920;
+    var TABLET_BREAKPOINT = 1024;
+    var page = document.querySelector('.page');
+    var outer = document.querySelector('.scale-outer');
+    function update() {
+      if (window.innerWidth < TABLET_BREAKPOINT) {
+        document.documentElement.style.setProperty('--page-scale', 1);
+        page.style.transform = '';
+        outer.style.height = '';
+        return;
+      }
+      var scale = Math.min(1, window.innerWidth / DESIGN_WIDTH);
+      document.documentElement.style.setProperty('--page-scale', scale);
+      page.style.transform = 'translateX(-50%) scale(' + scale + ')';
+      outer.style.height = (page.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
+</body>
+</html>

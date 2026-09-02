@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jeep 모바일 프레임 미리보기</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #E9EAEE;
+    font-family: 'Pretendard', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  phone-mockup {
+    transform: scale(var(--pm-scale, 0.78));
+    transform-origin: center center;
+  }
+</style>
+</head>
+<body>
+
+<phone-mockup src="jeep.html"></phone-mockup>
+
+<script src="components/phone-mockup.js"></script>
+<script>
+  (function () {
+    /* .pm-frame의 실제 종횡비 원본(426x898)에 맞춰, 가로/세로 여유 공간 중 더 좁은 쪽
+       기준으로 "하나의" scale 값만 계산해 적용 — 가로/세로를 따로 계산하지 않으므로
+       화면 크기가 달라져도 426:898 비율은 항상 그대로 유지된다 */
+    var FRAME_W = 426, FRAME_H = 898;
+    var MARGIN = 0.9; // 화면 여백 10%
+    function update() {
+      var scale = Math.min(
+        (window.innerWidth * MARGIN) / FRAME_W,
+        (window.innerHeight * MARGIN) / FRAME_H
+      );
+      document.documentElement.style.setProperty('--pm-scale', scale);
+    }
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
+</body>
+</html>
