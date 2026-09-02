@@ -193,7 +193,11 @@
       display: flex;
       align-items: center;
       gap: 113px;
-      padding-left: 130px;
+      /* Figma 오토레이아웃 실측: gap 113(일치), 패딩 0/0 — 기존 padding-left:130px는
+         Figma에 없는 값이라 차량+텍스트 블록 전체가 오른쪽으로 130px 밀려있었음.
+         제거하면 gap:113은 그대로 유지된 채 차량이 카드 왼쪽 끝에 붙고, 텍스트도
+         카드 폭 대비 약 60.5% 지점(우측 여백 약 10.5%)으로 자연스럽게 맞춰짐 */
+      padding-left: 0;
     }
     /* media-wrap 폭은 px로 고정하지 않고, 내부 grid-template-columns:max-content 로
        자식(글로우/자동차) 중 더 넓게 뻗어나간 쪽에 맞춰 자동으로 결정되게 함.
@@ -386,6 +390,22 @@
           1px -1px 3px rgba(0, 0, 0, 0.9),
           -1px -1px 3px rgba(0, 0, 0, 0.9);
       }
+
+      /* 카드 3개 + 2열 그리드라 GRAND CHEROKEE 혼자 2행 왼쪽 칸에 남고 오른쪽이 빈 채로
+         떠 있었음. 2열 구조·WRANGLER/GLADIATOR 크기는 그대로 두고, GRAND CHEROKEE만
+         두 칸을 span한 뒤 원래 한 칸 폭(gap:0이라 50%와 동일)으로 되돌려 가운데 정렬 */
+      .lineup-card--cherokee { grid-column: 1 / -1; width: 50%; margin: 0 auto; }
+    }
+
+    /* ══════════════════════ TABLET NARROW (769px ~ 902.98px) ══════════════════════
+       위 TABLET ONLY 블록의 max-width:650px 상한은 72vw가 650px를 넘는 903px 이상
+       에서만 작동함(903px 이상은 그대로 유지). 그보다 좁은 769~902px 구간은 여전히
+       순수 72vw가 적용되는데, 히어로 높이(62vw)도 같은 비율로 좁아지는 반면 타이틀은
+       거의 고정 픽셀 크기라, 뷰포트가 769px에 가까워질수록 차량 상단이 타이틀 2번째
+       줄과 점점 더 겹쳐 글자를 가리는 문제가 있었음(769px에서 실측 확인). 이 구간만
+       폭을 더 줄여 타이틀과의 여백을 확보 */
+    @media (min-width: 769px) and (max-width: 902.98px) {
+      .lineup-hero-car-wrap { width: 56%; }
     }
 
     /* ══════════════════════ MOBILE (768px 이하): 카드 1열 + 사이즈 추가 축소 ══════════════════════ */
