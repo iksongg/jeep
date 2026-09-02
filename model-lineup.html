@@ -37,6 +37,7 @@
       background: var(--white);
       color: var(--black);
       overflow-x: hidden;
+      word-break: keep-all;
     }
 
     /* 1920 기준 데스크톱 레이아웃을 1024px까지는 그대로 비율 축소, 그 밑(태블릿/모바일)은 별도 그리드 레이아웃 사용 */
@@ -404,8 +405,8 @@
 <!-- ═══ 태블릿/모바일 전용 퀵 모델 선택 (피그마 모바일뷰 기준) ═══ -->
 <div class="lineup-mobile-select">
   <a href="#card-wrangler" class="mobile-select-btn is-active" onclick="selectMobileModel(event, this)">WRANGLER</a>
-  <a href="#card-gladiator" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GLADIATOR</a>
   <a href="#card-cherokee" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GRAND CHEROKEE</a>
+  <a href="#card-gladiator" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GLADIATOR</a>
 </div>
 <div class="lineup-scroll-indicator" id="lineupScrollIndicator" aria-hidden="true">
   <span class="lineup-scroll-label">scroll</span>
