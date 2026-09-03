@@ -56,13 +56,21 @@
       background: var(--white);
     }
 
-    /* ─── HERO ─── */
+    /* ─── HERO ───
+       Figma 실측: Hero 배경(Mask group)이 1920×956 고정 프레임(뷰포트 높이와 무관).
+       기존 height:calc(100vh-80px)는 브라우저 창 높이에 따라 배경 object-fit:cover
+       크롭 비율이 달라져 Figma 크롭과 어긋났음 — 1024px 이상(= --page-scale 구간)만
+       956px 고정으로 바꾸고, 1023px 이하 태블릿/모바일 전용 높이(62vw/100vw)는
+       이미 별도 미디어쿼리가 완전히 덮어써서 영향 없음. */
     .lineup-hero {
       position: relative;
       width: 100%; height: calc(100vh - 80px);
       min-height: 700px;
       margin-top: 80px;
       overflow: visible;
+    }
+    @media (min-width: 1024px) {
+      .lineup-hero { height: 956px; min-height: 0; }
     }
     .lineup-hero-bg {
       position: absolute; inset: 0;
@@ -99,8 +107,8 @@
     .lineup-hero-tags a:hover { color: var(--color-primary, #487f70); }
     .lineup-hero-car-wrap {
       position: absolute;
-      left: 50%; top: 276px;
-      width: 900px;
+      left: 1001.27px; top: 269px;
+      width: 902.54px;
       transform: translateX(-50%);
       pointer-events: none;
       z-index: 5;
@@ -108,6 +116,14 @@
     .lineup-hero-car {
       width: 100%; height: auto;
       transform: rotate(-0.78deg);
+    }
+    /* Figma 실측(X:550 Y:269 W:902.54 H:702.73, 1920 프레임 기준)에 폭까지만 맞추면
+       height:auto가 이미지 원본 비율(약 1.27:1)로 계산되어 702.73px보다 살짝 커짐.
+       1024px 이상(= --page-scale 축소 구간)에서만 높이를 실측값으로 고정해 정확히 맞추고,
+       1023px 이하 태블릿/모바일 전용 레이아웃(width:72%/56%, height:auto)은 그대로 둔다. */
+    @media (min-width: 1024px) {
+      .lineup-hero-car-wrap { height: 702.73px; }
+      .lineup-hero-car { height: 100%; }
     }
     .lineup-hero-divider {
       position: absolute;
@@ -345,6 +361,14 @@
         position: absolute !important;
         margin: 0 !important;
         width: auto;
+        /* width만 %로 지정되고 height는 지정된 적이 없어서, <img width height> HTML
+           속성(예: wrangler-car.webp="794x432")의 height가 그대로 박스 높이로 쓰이고
+           있었다 — 가로는 카드 폭에 비례해 줄어드는데 세로는 원본 px 그대로 고정되면서
+           기본 object-fit:fill로 이미지가 세로로 크게 늘어나(특히 좁은 폭일수록 상자가
+           길쭉해져 왜곡이 심해짐) 카드 하단 텍스트 영역까지 차량이 밀고 내려왔던 것이
+           402px에서 텍스트와 겹치던 진짜 원인. height:auto로 폭 기준 원본 비율을
+           그대로 따르게 하면 모든 폭에서 차량이 의도된 크기로만 렌더링된다 */
+        height: auto;
       }
       .lineup-card-fade { display: none; }
       .lineup-card-info {
@@ -431,7 +455,7 @@
 
 <!-- ═══ HERO ═══ -->
 <section class="lineup-hero">
-  <img class="lineup-hero-bg" src="images/model-lineup-img/hero-bg.png" alt="" />
+  <img class="lineup-hero-bg" src="images/model-lineup-img/hero-bg.webp" alt="" width="2992" height="1408" fetchpriority="high" />
   <div class="lineup-hero-overlay"></div>
   <div class="lineup-hero-content">
     <h1 class="lineup-hero-title">세대를 넘어,<br class="mobile-break"> 자유를 달리다</h1>
@@ -442,7 +466,7 @@
     </div>
   </div>
   <div class="lineup-hero-car-wrap">
-    <img class="lineup-hero-car" src="images/model-lineup-img/hero-car.png" alt="Jeep" />
+    <img class="lineup-hero-car" src="images/model-lineup-img/hero-car.webp" alt="Jeep" width="1800" height="1411" fetchpriority="high" />
   </div>
   <img class="lineup-hero-divider" src="images/model-lineup-img/hero-divider.svg" alt="" />
 </section>
@@ -500,12 +524,12 @@
 
   <div class="lineup-cards">
     <article class="lineup-card lineup-card--wrangler" id="card-wrangler">
-      <img class="lineup-card-bg" src="images/model-lineup-img/wrangler-bg.png" alt="" />
+      <img class="lineup-card-bg" src="images/model-lineup-img/wrangler-bg.webp" alt="" width="3776" height="1120" loading="lazy" />
       <div class="lineup-card-fade"></div>
       <div class="lineup-card-content">
         <div class="lineup-card-media-wrap">
           <img class="lineup-card-glow" src="images/model-lineup-img/wrangler-glow.svg" alt="" />
-          <img class="lineup-card-media" src="images/model-lineup-img/wrangler-car.png" alt="Jeep Wrangler" />
+          <img class="lineup-card-media" src="images/model-lineup-img/wrangler-car.webp" alt="Jeep Wrangler" width="794" height="432" loading="lazy" />
         </div>
         <div class="lineup-card-info">
           <div class="lineup-card-text">
@@ -518,12 +542,12 @@
     </article>
 
     <article class="lineup-card lineup-card--gladiator" id="card-gladiator">
-      <img class="lineup-card-bg" src="images/model-lineup-img/gladiator-bg.png" alt="" />
+      <img class="lineup-card-bg" src="images/model-lineup-img/gladiator-bg.webp" alt="" width="3776" height="1120" loading="lazy" />
       <div class="lineup-card-fade"></div>
       <div class="lineup-card-content">
         <div class="lineup-card-media-wrap">
           <img class="lineup-card-glow" src="images/model-lineup-img/gladiator-glow.svg" alt="" />
-          <img class="lineup-card-media" src="images/model-lineup-img/gladiator-car.png" alt="Jeep Gladiator" />
+          <img class="lineup-card-media" src="images/model-lineup-img/gladiator-car.webp" alt="Jeep Gladiator" width="1041" height="490" loading="lazy" />
         </div>
         <div class="lineup-card-info">
           <div class="lineup-card-text">
@@ -536,12 +560,12 @@
     </article>
 
     <article class="lineup-card lineup-card--cherokee" id="card-cherokee">
-      <img class="lineup-card-bg" src="images/model-lineup-img/grandcherokee-bg.png" alt="" />
+      <img class="lineup-card-bg" src="images/model-lineup-img/grandcherokee-bg.webp" alt="" width="3776" height="1120" loading="lazy" />
       <div class="lineup-card-fade"></div>
       <div class="lineup-card-content">
         <div class="lineup-card-media-wrap">
           <img class="lineup-card-glow" src="images/model-lineup-img/grandcherokee-glow.svg" alt="" />
-          <img class="lineup-card-media" src="images/model-lineup-img/grandcherokee-car.png" alt="Jeep Grand Cherokee" />
+          <img class="lineup-card-media" src="images/model-lineup-img/grandcherokee-car.webp" alt="Jeep Grand Cherokee" width="743" height="377" loading="lazy" />
         </div>
         <div class="lineup-card-info">
           <div class="lineup-card-text">
