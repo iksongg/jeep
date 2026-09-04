@@ -896,6 +896,30 @@
     return n.toLocaleString('ko-KR') + '원';
   }
 
+  /* 차량 기본 가격은 quote.html의 QUOTE_BASE_PRICE와 동일한 값을 사용한다
+     (81,699,300 + 기본 선택 옵션 합계 = 기존 hero-price-amount 하드코딩값
+     84,670,000과 정확히 일치함, 즉 이 값이 실제 기준선임). OPTION_DATA 각
+     카테고리에서 현재 selected인 항목의 price만 더해 매번 전체를 다시 계산하므로
+     옵션을 반복 변경해도 이전 가격이 누적되지 않는다. */
+  var CHECKOUT_BASE_PRICE = 81699300;
+
+  function calcCheckoutTotal() {
+    var total = CHECKOUT_BASE_PRICE;
+    Object.keys(OPTION_DATA).forEach(function (key) {
+      var selected = OPTION_DATA[key].options.find(function (o) { return o.selected; });
+      if (selected && selected.price) total += selected.price;
+    });
+    return total;
+  }
+
+  function updateCheckoutPrice() {
+    var text = formatWon(calcCheckoutTotal());
+    var heroEl = document.querySelector('.hero-price-amount');
+    if (heroEl) heroEl.textContent = text;
+    var stickyEl = document.querySelector('.checkout-sticky-price');
+    if (stickyEl) stickyEl.textContent = text;
+  }
+
   function openOptionSheet(key) {
     var data = OPTION_DATA[key];
     if (!data) return;
@@ -1011,6 +1035,7 @@
     }
     data.options.forEach(function (o, i) { o.selected = (i === idx); });
     closeOptionSheet();
+    updateCheckoutPrice();
   }
 
   /* ─── quote.html에서 넘어온 선택값 반영 ───
@@ -1070,6 +1095,10 @@
       }
     });
   })();
+
+  /* quote에서 넘어온 선택값이 있든 없든(기본 진입 포함) 항상 현재 OPTION_DATA의
+     selected 상태를 기준으로 총액을 다시 계산해 hero-price-amount에 반영한다. */
+  updateCheckoutPrice();
 </script>
 
 <script>
