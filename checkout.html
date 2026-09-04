@@ -830,6 +830,7 @@
       type: 'list',
       options: [
         { label: '프리미엄 소프트탑 검정 (JK전용)', price: 94900, img: 'images/quote-img/프리미엄 소프트탑 검정 (JK전용).jpg', selected: true },
+        { label: '슬러쉬 매트', price: 157600, img: 'images/quote-img/슬러쉬 매트.jpg' },
         { label: '선택 안함', price: 0, img: null }
       ]
     },
@@ -838,6 +839,8 @@
       type: 'list',
       options: [
         { label: '도어실가드 - 스틸', price: 233000, img: 'images/quote-img/도어실가드 - 스틸.jpg', selected: true },
+        { label: '도어실가드 - 스테인레스스틸 (4도어)', price: 209300, img: 'images/quote-img/도어실가드 - 스테인레스스틸 (4도어).jpg' },
+        { label: '도어실가드 - 블랙', price: 102700, img: 'images/quote-img/도어실가드 - 블랙.jpg' },
         { label: '선택 안함', price: 0, img: null }
       ]
     },
@@ -845,6 +848,7 @@
       title: '퍼포먼스 락레일 변경',
       type: 'list',
       options: [
+        { label: '스플래쉬 가드', price: 82800, img: 'images/quote-img/item-splash-guard.png' },
         { label: '퍼포먼스 락레일', price: 1950000, img: 'images/checkout-img/item-performance-rail.webp', selected: true },
         { label: '선택 안함', price: 0, img: null }
       ]
@@ -853,7 +857,10 @@
       title: '스페어타이어커버 변경',
       type: 'list',
       options: [
+        { label: '스페어타이어커버 (트레일레이티드)', price: 82800, img: 'images/quote-img/item-tirecover-trailrated.png' },
+        { label: '스페어타이어커버 (모노톤 성조기)', price: 96800, img: 'images/quote-img/item-tirecover-flag.png' },
         { label: '스페어타이어커버 (야자수와 세븐그릴)', price: 141900, img: 'images/checkout-img/item-tirecover-palm.webp', selected: true },
+        { label: '스페어타이어커버 (사막지형과 윌리스MB)', price: 129000, img: 'images/quote-img/item-tirecover-desert.png' },
         { label: '선택 안함', price: 0, img: null }
       ]
     },
@@ -1005,6 +1012,64 @@
     data.options.forEach(function (o, i) { o.selected = (i === idx); });
     closeOptionSheet();
   }
+
+  /* ─── quote.html에서 넘어온 선택값 반영 ───
+     quote.html이 localStorage(jeepQuoteSelections)에 저장해 둔 현재 선택 상태를
+     읽어 OPTION_DATA의 selected 플래그와 화면(qitem-* 행)을 갱신한다. 저장된 값이
+     없으면(체크아웃에 바로 진입한 경우 등) 기존 하드코딩 기본값을 그대로 둔다.
+
+     라디오 그룹(color/wheel/carpet-mat/allweather-mat)은 저장된 값이 "라벨 문자열"
+     이고, 부가기능처럼 quote에 식별자가 없던 체크박스 항목(performance-rail/
+     tire-cover/car-cover/bag-set/tote-bag)은 quote 쪽에서 data-key로 표시해 둔
+     항목만 true로 저장돼 있다. 두 경우 모두 OPTION_DATA[key].options 안에서
+     실제로 일치하는(또는 존재하는) 항목을 찾아 선택 처리하고, 못 찾으면(quote가
+     선택했지만 checkout에 해당 옵션 자체가 없는 경우 등) "선택 안함"으로 폴백한다
+     — 이 로직은 OPTION_DATA 전체에 동일하게 적용되며 특정 옵션을 예외 처리하지
+     않는다. */
+  (function () {
+    var saved;
+    try { saved = JSON.parse(localStorage.getItem('jeepQuoteSelections') || 'null'); } catch (e) { saved = null; }
+    if (!saved) return;
+
+    Object.keys(OPTION_DATA).forEach(function (key) {
+      var data = OPTION_DATA[key];
+      var picked = saved[key];
+      if (picked === undefined) return; // quote 쪽에 이 옵션에 대한 정보가 없으면 기존 기본값 유지
+
+      var matched = null;
+      if (typeof picked === 'string') {
+        matched = data.options.find(function (o) { return o.label === picked; });
+      } else if (picked === true) {
+        matched = data.options.find(function (o) { return o.label !== '선택 안함'; });
+      }
+      if (!matched) {
+        matched = data.options.find(function (o) { return o.label === '선택 안함'; });
+      }
+      if (!matched) return; // 대응되는 옵션도 "선택 안함"도 없으면 건드리지 않음
+
+      data.options.forEach(function (o) { o.selected = false; });
+      matched.selected = true;
+
+      var row = document.getElementById('qitem-' + key);
+      if (!row) return;
+      var nameEl = row.querySelector('.quote-item-name');
+      if (nameEl) nameEl.textContent = matched.label;
+      if (data.type === 'swatch') {
+        var swatchEl = row.querySelector('.quote-color-swatch');
+        if (swatchEl) {
+          swatchEl.style.background = matched.img
+            ? 'url(' + matched.img + ') center / cover'
+            : matched.swatchColor;
+        }
+      } else {
+        var imgEl = row.querySelector('.quote-item-img');
+        var priceEl = row.querySelector('.quote-item-price');
+        if (imgEl) imgEl.style.visibility = matched.img ? 'visible' : 'hidden';
+        if (matched.img) imgEl.src = matched.img;
+        if (priceEl) priceEl.textContent = formatWon(matched.price || 0);
+      }
+    });
+  })();
 </script>
 
 <script>

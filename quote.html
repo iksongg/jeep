@@ -296,8 +296,13 @@
       .quote-section-title { cursor: pointer; }
       .quote-section-title > .material-symbols-outlined { display: block; transition: transform 0.6s ease; }
       .quote-section.collapsed .quote-section-title > .material-symbols-outlined { transform: rotate(180deg); }
-      .quote-swatch-row { overflow: hidden; max-height: 3000px; transition: max-height 0.6s ease; }
-      .quote-section.collapsed .quote-swatch-row { max-height: 0; }
+      /* overflow:hidden은 아코디언 접힘(max-height:0) 상태에서만 필요하다. 펼쳐진
+         평소 상태까지 항상 hidden을 걸어두면 .quote-swatch-check가 배지 형태로
+         -6px씩 밖으로 나가도록 설계된 부분이 행에 의해 잘려 보였음(선택 체크마크
+         우하단이 반원으로 잘리는 문제) — 펼침 상태는 overflow:visible로 두고,
+         접힐 때만 hidden을 줘서 실제로 숨겨야 하는 순간에만 자르도록 분리. */
+      .quote-swatch-row { overflow: visible; max-height: 3000px; transition: max-height 0.6s ease; }
+      .quote-section.collapsed .quote-swatch-row { max-height: 0; overflow: hidden; }
 
       .quote-item { padding-right: 12px; }
       .quote-item-left { gap: 10px; }
@@ -553,7 +558,7 @@
       <div class="quote-accordion-body">
         <div class="quote-item-list">
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="82800" />
+            <input type="checkbox" class="quote-item-radio" data-price="82800" data-key="tire-cover" />
             <div class="quote-item-left">
               <img class="quote-item-thumb is-contain" src="images/quote-img/item-tirecover-trailrated.png" alt="" />
               <div class="quote-item-info">
@@ -564,7 +569,7 @@
             <span class="quote-radio-dot"></span>
           </label>
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="96800" />
+            <input type="checkbox" class="quote-item-radio" data-price="96800" data-key="tire-cover" />
             <div class="quote-item-left">
               <img class="quote-item-thumb is-contain" src="images/quote-img/item-tirecover-flag.png" alt="" />
               <div class="quote-item-info">
@@ -575,7 +580,7 @@
             <span class="quote-radio-dot"></span>
           </label>
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="141900" checked />
+            <input type="checkbox" class="quote-item-radio" data-price="141900" data-key="tire-cover" checked />
             <div class="quote-item-left">
               <img class="quote-item-thumb is-contain" src="images/quote-img/item-tirecover-palm.png" alt="" />
               <div class="quote-item-info">
@@ -586,7 +591,7 @@
             <span class="quote-radio-dot"></span>
           </label>
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="129000" />
+            <input type="checkbox" class="quote-item-radio" data-price="129000" data-key="tire-cover" />
             <div class="quote-item-left">
               <img class="quote-item-thumb is-contain" src="images/quote-img/item-tirecover-desert.png" alt="" />
               <div class="quote-item-info">
@@ -597,7 +602,7 @@
             <span class="quote-radio-dot"></span>
           </label>
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="318500" checked />
+            <input type="checkbox" class="quote-item-radio" data-price="318500" data-key="car-cover" checked />
             <div class="quote-item-left">
               <img class="quote-item-thumb" src="images/quote-img/item-car-cover.png" alt="" />
               <div class="quote-item-info">
@@ -630,7 +635,7 @@
             <span class="quote-radio-dot"></span>
           </label>
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="194700" checked />
+            <input type="checkbox" class="quote-item-radio" data-price="194700" data-key="bag-set" checked />
             <div class="quote-item-left">
               <img class="quote-item-thumb" src="images/quote-img/item-bag-set.png" alt="" />
               <div class="quote-item-info">
@@ -641,7 +646,7 @@
             <span class="quote-radio-dot"></span>
           </label>
           <label class="quote-item">
-            <input type="checkbox" class="quote-item-radio" data-price="37700" checked />
+            <input type="checkbox" class="quote-item-radio" data-price="37700" data-key="tote-bag" checked />
             <div class="quote-item-left">
               <img class="quote-item-thumb" src="images/quote-img/item-tote-bag.png" alt="" />
               <div class="quote-item-info">
@@ -718,6 +723,78 @@
       });
     });
   });
+
+  /* ─── quote → checkout 옵션 선택값 전달 ───
+     기존에는 quote에서 고른 옵션이 checkout으로 전혀 전달되지 않고(location.href로
+     단순 이동만 함), checkout.html의 OPTION_DATA가 자체 하드코딩된 기본값만 쓰고
+     있어서 "옵션 변경" 창을 열면 quote에서 실제로 고른 값이 아니라 항상 최초
+     기본값(또는 선택 안함)이 표시되는 문제가 있었음. localStorage로 quote의 현재
+     선택 상태를 저장하고, checkout.html이 로드 시 이를 읽어 OPTION_DATA와 화면에
+     반영하도록 한다(별도의 새 상태관리 도구를 추가하지 않고, 이미 쓰고 있는
+     data-price/name/checked 구조를 그대로 읽어서 저장하는 방식).
+
+     라디오 그룹(color/wheel/carpet-mat/allweather-mat)은 항상 하나가 선택되어
+     있으므로 선택된 라벨 문자열을 저장하고, checkout.html에서는 OPTION_DATA[key]
+     .options 중 라벨이 일치하는 항목을 찾아 선택 처리한다. exterior-1(스플래쉬
+     가드/퍼포먼스 락레일)은 quote의 name과 checkout의 OPTION_DATA 키 이름이 달라
+     ('exterior-1' → 'performance-rail') 별도로 매핑한다.
+     체크박스형 액세서리(부가기능)는 quote에는 없던 식별자가 필요해서
+     data-key 속성을 최소한으로 추가했다(checkout의 OPTION_DATA 키와 동일한 값).
+     같은 카테고리 안에 선택지가 여러 개인 경우(예: 스페어타이어커버 4종) 여러
+     체크박스가 같은 data-key를 공유할 수 있어, 그 중 실제로 체크된 항목의 라벨을
+     찾아 저장하고 없으면 false(선택 안함)로 저장한다 — 특정 옵션을 하드코딩하지
+     않고 data-key 유무만으로 일반적으로 처리. */
+  var QUOTE_STORAGE_KEY = 'jeepQuoteSelections';
+
+  /* is-2line 항목은 <br class="mobile-break">로 줄바꿈만 되어 있어 textContent를
+     그대로 읽으면 공백이 사라진다("스페어타이어커버(야자수와 세븐그릴)"). br을
+     공백으로 치환한 뒤 읽어서 checkout OPTION_DATA의 라벨과 정확히 일치시킨다. */
+  function getItemLabel(inputEl) {
+    var item = inputEl.closest('.quote-item');
+    var nameEl = item && item.querySelector('.quote-item-name');
+    if (!nameEl) return null;
+    var clone = nameEl.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) { br.replaceWith(' '); });
+    return clone.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  function collectQuoteSelections() {
+    var sel = {};
+
+    ['color', 'wheel', 'carpet-mat', 'allweather-mat'].forEach(function (name) {
+      var checked = document.querySelector('input[name="' + name + '"]:checked');
+      if (!checked) return;
+      var label = checked.dataset.name || getItemLabel(checked);
+      if (label) sel[name] = label;
+    });
+
+    var exteriorChecked = document.querySelector('input[name="exterior-1"]:checked');
+    if (exteriorChecked) {
+      var exteriorLabel = getItemLabel(exteriorChecked);
+      if (exteriorLabel) sel['performance-rail'] = exteriorLabel;
+    }
+
+    var keyGroups = {};
+    document.querySelectorAll('.quote-item-radio[data-key]').forEach(function (input) {
+      var key = input.dataset.key;
+      (keyGroups[key] = keyGroups[key] || []).push(input);
+    });
+    Object.keys(keyGroups).forEach(function (key) {
+      var checkedInput = keyGroups[key].filter(function (i) { return i.checked; })[0];
+      sel[key] = checkedInput ? (getItemLabel(checkedInput) || true) : false;
+    });
+
+    return sel;
+  }
+
+  function saveQuoteSelections() {
+    try { localStorage.setItem(QUOTE_STORAGE_KEY, JSON.stringify(collectQuoteSelections())); } catch (e) {}
+  }
+
+  document.querySelectorAll('.quote-swatch-radio, .quote-item-radio').forEach(function (input) {
+    input.addEventListener('change', saveQuoteSelections);
+  });
+  saveQuoteSelections();
 </script>
 
 <script>
