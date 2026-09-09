@@ -238,12 +238,16 @@
     /* 카드별 자동차/글로우 위치·크기 (피그마 node 3700:33181 실측값, 카드 높이 390px 기준 px 오프셋).
        margin-left/top로 서로의 상대 위치만 잡아주면, 그리드가 둘 중 더 넓은 쪽(margin-left+width)에
        맞춰 media-wrap 폭을 자동으로 결정한다 — 자동차나 그림자 에셋이 바뀌어도 잘리지 않음. */
+    /* .lineup-card-media img에는 HTML width/height 속성(원본 픽셀값)이 함께 박혀 있어서,
+       CSS로 width만 지정하면 height는 auto로 비율 계산되지 않고 HTML height 속성값이
+       그대로 적용 프리젠테이셔널 힌트로 남아 실제 렌더 폭/원본 높이가 뒤섞여 차량이
+       찌그러져 보였다 — height:auto를 명시해 CSS width 기준으로 원본 비율을 지키게 함 */
     .lineup-card--wrangler .lineup-card-glow  { margin-left: 195.7px; margin-top: 158.73px; width: 462.06px; }
-    .lineup-card--wrangler .lineup-card-media { margin-left: 185.73px; margin-top: 63.57px; width: 423.1px; }
+    .lineup-card--wrangler .lineup-card-media { margin-left: 185.73px; margin-top: 63.57px; width: 423.1px; height: auto; }
     .lineup-card--gladiator .lineup-card-glow  { margin-left: 170.33px; margin-top: 180.96px; width: 434.88px; }
-    .lineup-card--gladiator .lineup-card-media { margin-left: 117.78px; margin-top: 51.87px; width: 540.88px; }
+    .lineup-card--gladiator .lineup-card-media { margin-left: 117.78px; margin-top: 51.87px; width: 540.88px; height: auto; }
     .lineup-card--cherokee .lineup-card-glow  { margin-left: 170.33px; margin-top: 190.32px; width: 453px; }
-    .lineup-card--cherokee .lineup-card-media { margin-left: 118.69px; margin-top: 43.29px; width: 540.88px; }
+    .lineup-card--cherokee .lineup-card-media { margin-left: 118.69px; margin-top: 43.29px; width: 540.88px; height: auto; }
     .lineup-card-info {
       position: relative;
       flex-shrink: 0;
@@ -323,7 +327,7 @@
       .lineup-hero-title { font-size: 36px; white-space: normal; }
       .lineup-hero-title .mobile-break { display: inline; }
       .lineup-hero-tags { display: none; } /* 모바일 피그마엔 해시태그 대신 아래 퀵셀렉트 필로 대체 */
-      .lineup-hero-car-wrap { left: 50%; top: auto; bottom: 0; width: 72%; }
+      .lineup-hero-car-wrap { left: 50%; top: auto; bottom: -6%; width: 92%; }
       .lineup-hero-divider { bottom: -30px; }
 
       /* ── 데스크톱 드롭다운 필터는 숨기고, 피그마 모바일뷰(node 4073:53572)의 퀵 모델 선택 필로 대체 ── */
@@ -436,8 +440,15 @@
     @media (max-width: 768px) {
       .lineup-hero { height: 100vw; min-height: 300px; }
       .lineup-hero-title { font-size: 36px; }
+      /* 769~1023px 태블릿 구간엔 max-width:650px 상한이 있는데, 정작 그 아래
+         768px(=height:100vw로 히어로가 가장 큰 지점)엔 상한이 없어서 차량 폭이
+         width:92% 그대로 706px까지 커지고, 차량 상단(앞유리)이 타이틀 2번째 줄과
+         90px 가까이 겹쳐 글자가 거의 안 보였음(768px에서 실측 확인). 375~430px처럼
+         좁은 폭에서는 92%가 이미 520px보다 작아 이 상한에 걸리지 않으므로 그 구간
+         레이아웃은 그대로 유지됨 */
+      .lineup-hero-car-wrap { max-width: 520px; }
 
-      .lineup-main { padding: 0 0 48px; }
+      .lineup-main { padding: 0; }
       .lineup-mobile-select { padding: 20px 16px 0; }
 
       .lineup-cards { grid-template-columns: 1fr; gap: 0; }
@@ -461,8 +472,8 @@
     <h1 class="lineup-hero-title">세대를 넘어,<br class="mobile-break"> 자유를 달리다</h1>
     <div class="lineup-hero-tags">
       <a href="#" onclick="openComingSoon(event)">WRANGLER</a>
-      <a href="#" onclick="openComingSoon(event)">GRAND CHEROKEE</a>
       <a href="#" onclick="openComingSoon(event)">GLADIATOR</a>
+      <a href="#" onclick="openComingSoon(event)">GRAND CHEROKEE</a>
     </div>
   </div>
   <div class="lineup-hero-car-wrap">
@@ -474,8 +485,8 @@
 <!-- ═══ 태블릿/모바일 전용 퀵 모델 선택 (피그마 모바일뷰 기준) ═══ -->
 <div class="lineup-mobile-select">
   <a href="#card-wrangler" class="mobile-select-btn is-active" onclick="selectMobileModel(event, this)">WRANGLER</a>
-  <a href="#card-cherokee" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GRAND CHEROKEE</a>
   <a href="#card-gladiator" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GLADIATOR</a>
+  <a href="#card-cherokee" class="mobile-select-btn" onclick="selectMobileModel(event, this)">GRAND CHEROKEE</a>
 </div>
 <div class="lineup-scroll-indicator" id="lineupScrollIndicator" aria-hidden="true">
   <span class="lineup-scroll-label">scroll</span>

@@ -140,7 +140,8 @@
     }
     .quote-swatch.is-img { border-radius: 50%; object-fit: cover; }
     .quote-swatch-check {
-      position: absolute; right: -6px; bottom: -6px;
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
       width: 24px; height: 24px; border-radius: 50%;
       background: var(--black);
       display: flex; align-items: center; justify-content: center;
@@ -311,7 +312,7 @@
       .quote-item-name.is-2line { line-height: 1.6; }
 
       /* 하단 고정 바: 모델명 없이 가격 + 구매신청만, 높이 60px (피그마 모바일뷰 4073:53573 실측) */
-      .quote-sticky-info { padding: 0 20px; height: 60px; justify-content: flex-end; }
+      .quote-sticky-info { padding: 0 20px; height: 60px; justify-content: flex-start; }
       .quote-sticky-name { display: none; }
       .quote-sticky-price { font-size: 20px; }
       .quote-sticky-btn { width: auto; height: 60px; padding: 10px 59px; font-size: 14px; }
