@@ -70,7 +70,7 @@
     .map-ctrl-nav {
       width: 46px; height: 46px; background: black;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      flex-shrink: 0; cursor: pointer;
     }
     .map-ctrl-nav img { width: 36px; height: 36px; }
     .map-ctrl-zoom { display: flex; flex-direction: column; gap: 4px; }
@@ -288,14 +288,14 @@
 
     <!-- 지도 컨트롤 -->
     <div class="map-controls">
-      <div class="map-ctrl-nav">
+      <div class="map-ctrl-nav" onclick="openComingSoon(event, '현재 서비스는 준비중입니다')">
         <img src="images/find-dealer-img/icon-navigation.svg" alt="" />
       </div>
       <div class="map-ctrl-zoom">
-        <div class="map-ctrl-btn">
+        <div class="map-ctrl-btn" onclick="openComingSoon(event, '현재 서비스는 준비중입니다')">
           <img src="images/find-dealer-img/icon-add.svg" alt="확대" />
         </div>
-        <div class="map-ctrl-btn">
+        <div class="map-ctrl-btn" onclick="openComingSoon(event, '현재 서비스는 준비중입니다')">
           <img src="images/find-dealer-img/icon-remove.svg" alt="축소" />
         </div>
       </div>
